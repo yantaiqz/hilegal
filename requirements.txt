@@ -2,4 +2,6 @@ streamlit
 pandas
 networkx
 pyvis
+jinja2       ← 新增：pyvis 的 HTML 模板引擎依赖
+jsmin        ← 新增：pyvis 的 JS 压缩依赖
 openpyxl
