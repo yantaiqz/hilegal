@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from pyvis.network import Network
+#from pyvis.network import Network
 import io
 from datetime import datetime
 import streamlit.components.v1 as components
