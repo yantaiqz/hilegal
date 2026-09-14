@@ -13,6 +13,8 @@ SENDER_PASSWORD = "smqk khlq goxb rhdh"  # 你的 Gmail 应用专用密码 (App 
 RECEIVER_GMAIL = "ytqzytqz@gmail.com"  # 接收通知的 Gmail 账号
 
 
+
+
 def send_email_notification(user_linkedin, user_email):
     """发送邮件通知函数"""
     subject = "🚀 New Video Request Submitted"
@@ -29,7 +31,6 @@ def send_email_notification(user_linkedin, user_email):
     message["Subject"] = Header(subject, "utf-8")
 
     try:
-        # 使用 SSL 连接 Gmail SMTP 服务器
         with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
             server.login(SENDER_GMAIL, SENDER_PASSWORD)
             server.sendmail(SENDER_GMAIL, [RECEIVER_GMAIL], message.as_string())
@@ -98,6 +99,30 @@ st.markdown(
         padding-bottom: 0.5rem;
     }
 
+    /* Video Placeholder Box */
+    .video-placeholder {
+        background-color: #EAEAEA;
+        border: 2px dashed #0A66C2;
+        border-radius: 8px;
+        height: 210px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 1.5rem;
+        color: #0A66C2;
+    }
+    .placeholder-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .placeholder-text {
+        font-size: 0.9rem;
+        color: #5E5E5E;
+    }
+
     /* Inputs & Buttons */
     div[data-baseweb="input"] {
         border-radius: 4px;
@@ -161,25 +186,45 @@ st.markdown(
 
 col1, col2, col3 = st.columns(3)
 
-sample_videos = [
-    {
-        "title": "Senior Software Engineer Case",
-        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-    {
-        "title": "Senior Product Manager Case",
-        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-    {
-        "title": "Marketing Director Case",
-        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
-    },
-]
+# 本地视频路径定义（请替换为你本地实际的视频文件文件名或绝对路径）
+LOCAL_VIDEO_1 = "video_1.mp4"
+LOCAL_VIDEO_2 = "video_2.mp4"
 
-for col, item in zip([col1, col2, col3], sample_videos):
-    with col:
-        st.markdown(f"**{item['title']}**")
-        st.video(item["url"])
+# 1. 本地视频 1
+with col1:
+    st.markdown("**Senior Software Engineer Case**")
+    try:
+        # 读取本地视频文件
+        with open(LOCAL_VIDEO_1, "rb") as video_file:
+            st.video(video_file.read())
+    except FileNotFoundError:
+        st.warning(f"Local video file not found: `{LOCAL_VIDEO_1}`")
+
+# 2. 本地视频 2
+with col2:
+    st.markdown("**Senior Product Manager Case**")
+    try:
+        # 读取本地视频文件
+        with open(LOCAL_VIDEO_2, "rb") as video_file:
+            st.video(video_file.read())
+    except FileNotFoundError:
+        st.warning(f"Local video file not found: `{LOCAL_VIDEO_2}`")
+
+# 3. 空白占位符（提示用户这里将是生成的视频）
+with col3:
+    st.markdown("**Your Personalized Showcase**")
+    st.markdown(
+        """
+    <div class="video-placeholder">
+        <div class="placeholder-title">✨ Your Video Here</div>
+        <div class="placeholder-text">
+            Submit your profile below! <br>
+            AI will generate your personalized career showcase video right here.
+        </div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("<br>", unsafe_allow_html=True)
 
