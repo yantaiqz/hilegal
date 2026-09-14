@@ -192,7 +192,7 @@ LOCAL_VIDEO_2 = "video_2.mp4"
 
 # 1. 本地视频 1
 with col1:
-    st.markdown("**Senior Software Engineer Case**")
+    st.markdown("**Supreme Court Justice Showcase**")
     try:
         # 读取本地视频文件
         with open(LOCAL_VIDEO_1, "rb") as video_file:
@@ -202,7 +202,7 @@ with col1:
 
 # 2. 本地视频 2
 with col2:
-    st.markdown("**Senior Product Manager Case**")
+    st.markdown("**Legal Tech Founder Showcase**")
     try:
         # 读取本地视频文件
         with open(LOCAL_VIDEO_2, "rb") as video_file:
