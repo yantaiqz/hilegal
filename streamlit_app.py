@@ -1,24 +1,63 @@
+import smtplib
+from email.header import Header
+from email.mime.text import MIMEText
 import streamlit as st
 
-# 1. 页面基本配置
+# ==========================================
+# 邮箱配置信息（请在此处替换为你自己的配置）
+# ==========================================
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 465  # SSL 端口
+SENDER_GMAIL = "ytqzytqz@gmail.com"  # 你的 Gmail 账号
+SENDER_PASSWORD = "smqk khlq goxb rhdh"  # 你的 Gmail 应用专用密码 (App Password)
+RECEIVER_GMAIL = "ytqzytqz@gmail.com"  # 接收通知的 Gmail 账号
+
+
+def send_email_notification(user_linkedin, user_email):
+    """发送邮件通知函数"""
+    subject = "🚀 New Video Request Submitted"
+    body = f"""
+    A new user has submitted a request for video generation:
+
+    - LinkedIn Profile: {user_linkedin}
+    - User Email: {user_email}
+    """
+
+    message = MIMEText(body, "plain", "utf-8")
+    message["From"] = Header(f"LinkedIn Video Bot <{SENDER_GMAIL}>", "utf-8")
+    message["To"] = Header(RECEIVER_GMAIL, "utf-8")
+    message["Subject"] = Header(subject, "utf-8")
+
+    try:
+        # 使用 SSL 连接 Gmail SMTP 服务器
+        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as server:
+            server.login(SENDER_GMAIL, SENDER_PASSWORD)
+            server.sendmail(SENDER_GMAIL, [RECEIVER_GMAIL], message.as_string())
+        return True, "Success"
+    except Exception as e:
+        return False, str(e)
+
+
+# 1. Page Configuration
 st.set_page_config(
     page_title="LinkedIn Profile to Video Generator",
     page_icon="💼",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
 )
 
-# 2. 注入极简领英风格 CSS 样式
-st.markdown("""
+# 2. CSS Styling (LinkedIn Aesthetic)
+st.markdown(
+    """
 <style>
-    /* 全局背景色与字体 */
+    /* Global Background and Typography */
     .stApp {
         background-color: #F3F2EF;
         font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         color: #181818;
     }
 
-    /* 顶部标题栏 / Header 样式 */
+    /* Header Styling */
     .main-header {
         background-color: #FFFFFF;
         padding: 2.5rem 2rem 2rem 2rem;
@@ -39,7 +78,7 @@ st.markdown("""
         font-size: 1.1rem;
     }
 
-    /* 内容卡片统一样式 */
+    /* Card Styling */
     .css-card {
         background-color: #FFFFFF;
         padding: 1.8rem;
@@ -49,7 +88,7 @@ st.markdown("""
         margin-bottom: 1.5rem;
     }
 
-    /* 模块标题 */
+    /* Section Titles */
     .section-title {
         color: #181818;
         font-size: 1.3rem;
@@ -59,12 +98,12 @@ st.markdown("""
         padding-bottom: 0.5rem;
     }
 
-    /* 输入框与按钮样式重写 */
+    /* Inputs & Buttons */
     div[data-baseweb="input"] {
         border-radius: 4px;
     }
     
-    /* 领英蓝主按钮 */
+    /* Primary LinkedIn Blue Button */
     .stButton>button {
         background-color: #0A66C2 !important;
         color: #FFFFFF !important;
@@ -79,7 +118,7 @@ st.markdown("""
         background-color: #004182 !important;
     }
 
-    /* 提示信息样式 */
+    /* Notice Box */
     .notice-box {
         background-color: #E8F4F9;
         border-left: 4px solid #0A66C2;
@@ -90,7 +129,7 @@ st.markdown("""
         margin-top: 1rem;
     }
 
-    /* 页脚 */
+    /* Footer */
     .footer {
         text-align: center;
         color: #7F7F7F;
@@ -99,26 +138,42 @@ st.markdown("""
         padding-bottom: 1rem;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-# --- 3. 头部区域 ---
-st.markdown("""
+# --- 3. Header Section ---
+st.markdown(
+    """
 <div class="main-header">
-    <div class="main-title">LinkedIn 个人主页转 AI 职场视频</div>
-    <div class="main-subtitle">输入你的领英链接，一键生成专属的高品质职场展示视频</div>
+    <div class="main-title">LinkedIn Profile to AI Professional Video</div>
+    <div class="main-subtitle">Turn your LinkedIn profile into a high-quality video showcase with a single click</div>
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
-# --- 4. 视频案例展示区 ---
-st.markdown('<div class="section-title">📹 案例展示</div>', unsafe_allow_html=True)
+# --- 4. Video Showcase Section ---
+st.markdown(
+    '<div class="section-title">📹 Showcase & Examples</div>',
+    unsafe_allow_html=True,
+)
 
-# 展示 3 个视频案例列（可以替换为你自己的视频地址或本地视频）
 col1, col2, col3 = st.columns(3)
 
 sample_videos = [
-    {"title": "高级软件工程师案例", "url": "https://www.w3schools.com/html/mov_bbb.mp4"},
-    {"title": "资深产品经理案例", "url": "https://www.w3schools.com/html/mov_bbb.mp4"},
-    {"title": "市场营销总监案例", "url": "https://www.w3schools.com/html/mov_bbb.mp4"},
+    {
+        "title": "Senior Software Engineer Case",
+        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
+    {
+        "title": "Senior Product Manager Case",
+        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
+    {
+        "title": "Marketing Director Case",
+        "url": "https://www.w3schools.com/html/mov_bbb.mp4",
+    },
 ]
 
 for col, item in zip([col1, col2, col3], sample_videos):
@@ -128,49 +183,70 @@ for col, item in zip([col1, col2, col3], sample_videos):
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- 5. 提交表单区 ---
-st.markdown('<div class="section-title">✨ 生成你的专属视频</div>', unsafe_allow_html=True)
+# --- 5. Form Submission Section ---
+st.markdown(
+    '<div class="section-title">✨ Generate Your Personal Video</div>',
+    unsafe_allow_html=True,
+)
 
-# 使用表单保证交互体验整洁
 with st.form(key="video_request_form"):
     linkedin_url = st.text_input(
-        "领英个人主页链接", 
-        placeholder="https://www.linkedin.com/in/your-profile"
+        "LinkedIn Profile URL",
+        placeholder="https://www.linkedin.com/in/your-profile",
     )
-    
-    email = st.text_input(
-        "接收视频的 Email 邮箱", 
-        placeholder="yourname@example.com"
-    )
-    
-    # 免责/提示说明
-    st.markdown("""
-    <div class="notice-box">
-        💡 <b>提示与声明：</b><br>
-        1. 视频生成完全 <b>免费</b>。<br>
-        2. 提交即表示您同意生成的视频可能会被用于本网站的案例宣传与演示。
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    submit_button = st.form_submit_button(label="立即免费生成视频")
 
-# --- 6. 提交处理逻辑 ---
+    email = st.text_input(
+        "Email Address to Receive Video", placeholder="yourname@example.com"
+    )
+
+    # Notice / Disclaimer
+    st.markdown(
+        """
+    <div class="notice-box">
+        💡 <b>Notes & Terms:</b><br>
+        1. Video generation is completely <b>FREE</b>.<br>
+        2. By submitting, you agree that the generated video may be used for showcase and promotional purposes on this website.
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    submit_button = st.form_submit_button(label="Generate Video Now for Free")
+
+# --- 6. Form Submission Logic ---
 if submit_button:
     if not linkedin_url or not email:
-        st.error("请完整填写领英链接和 Email 邮箱！")
+        st.error(
+            "Please complete both the LinkedIn URL and Email address fields!"
+        )
     elif "linkedin.com/in/" not in linkedin_url.lower():
-        st.warning("请输入有效的领英个人主页链接（例如：https://www.linkedin.com/in/xxx）")
+        st.warning(
+            "Please enter a valid LinkedIn profile link (e.g., https://www.linkedin.com/in/xxx)"
+        )
     elif "@" not in email:
-        st.warning("请输入有效的邮箱地址！")
+        st.warning("Please enter a valid email address!")
     else:
-        # TODO: 这里可以添加将数据写入数据库或发送到 backend API 的逻辑
-        st.success("✅ 提交成功！")
-        st.info("📨 我们已收到您的请求，视频制作完成后，将在 **24 小时内** 发送至您的 Email 邮箱，请注意查收！")
+        # 发送 Gmail 邮件通知
+        with st.spinner("Submitting your request..."):
+            success, err_msg = send_email_notification(linkedin_url, email)
 
-# --- 7. 页脚 ---
-st.markdown("""
+        if success:
+            st.success("✅ Submitted Successfully!")
+            st.info(
+                "📨 We have received your request. Once the video is generated, it will be sent to your email within **24 hours**. Please keep an eye on your inbox!"
+            )
+        else:
+            st.error(
+                f"⚠️ Failed to send notification email. Error details: {err_msg}"
+            )
+
+# --- 7. Footer ---
+st.markdown(
+    """
 <div class="footer">
     © 2026 LinkedIn Video Generator. All rights reserved. | Minimalist Style Powered by Streamlit
 </div>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
