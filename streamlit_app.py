@@ -369,7 +369,7 @@ def handle_select_category(cat_name):
 # 6. Video Showcase Category 2: Professional Credibility
 # ==========================================
 st.markdown(
-    '<div class="section-title">2️⃣ Professional Credibility</div>',
+    '<div class="section-title">Professional Credibility</div>',
     unsafe_allow_html=True,
 )
 col4, col5, col6 = st.columns(3)
@@ -402,7 +402,7 @@ with col6:
 # 7. Video Showcase Category 3: Business Development & Lead Generation
 # ==========================================
 st.markdown(
-    '<div class="section-title">3️⃣ Business Development & Lead Generation</div>',
+    '<div class="section-title">Business Development & Lead Generation</div>',
     unsafe_allow_html=True,
 )
 col7, col8, col9 = st.columns(3)
@@ -436,7 +436,7 @@ st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 # 5. Video Showcase Category 1: Personal Branding & Connection
 # ==========================================
 st.markdown(
-    '<div class="section-title">1️⃣ Personal Branding & Connection</div>',
+    '<div class="section-title">Personal Branding & Connection</div>',
     unsafe_allow_html=True,
 )
 col1, col2, col3 = st.columns(3)
