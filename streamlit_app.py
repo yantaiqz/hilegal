@@ -168,35 +168,54 @@ st.markdown(
         padding-left: 0.6rem;
     }
 
-    /* 统一所有视频与占位卡片的比例与高度 (16:9 Aspect Ratio) */
+
+
+/* 1. 强制视频父级容器外框为统一的固定比例与高度 */
     div[data-testid="stVideo"] {
         width: 100% !important;
-        aspect-ratio: 16 / 9 !important;
+        aspect-ratio: 16 / 9 !important; /* 统一卡片比例为 16:9 */
+        background-color: #000000;      /* 竖屏视频左右留黑边时背景统一 */
         border-radius: 8px;
         overflow: hidden;
-    }
-    div[data-testid="stVideo"] video, div[data-testid="stVideo"] iframe {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    /* Reserve Card / Placeholder Box 强行保持 16:9 统一高度 */
+    /* 2. 针对 HTML5 video 元素和 YouTube iframe 的处理 */
+    div[data-testid="stVideo"] video {
+        width: 100% !important;
+        height: 100% !important;
+        /* 选择一：使用 contain，完整展示视频不裁切，两旁自动填黑边，占用物理面积100%一致 */
+        object-fit: contain !important; 
+
+        /* 选择二：如果希望全屏铺满无黑边（会裁剪竖屏上下部分），取消上面一行，使用下面这行：
+           object-fit: cover !important; 
+        */
+    }
+
+    div[data-testid="stVideo"] iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: none;
+    }
+
+    /* 3. 确保占位卡片（Reserve Card）与视频容器完全同高同面积 */
     .reserve-card {
         background: #FFFFFF;
         border: 2px dashed #0A66C2;
         border-radius: 8px;
         padding: 1rem;
         text-align: center;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 16 / 9; /* 保证与 16:9 的视频框面积完全一致 */
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         box-sizing: border-box;
-        margin-bottom: 0.5rem;
     }
+
     .reserve-card-title {
         font-size: 1rem;
         font-weight: 700;
