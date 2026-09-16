@@ -298,8 +298,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-LOCAL_VIDEO_1 = "video_1.mp4"
-LOCAL_VIDEO_2 = "video_2.mp4"
+LOCAL_VIDEO_1 = "01.mp4"
+LOCAL_VIDEO_2 = "02.mov"
+LOCAL_VIDEO_3 = "03.mp4"
+LOCAL_VIDEO_4 = "04.mp4"
 
 
 def render_video_or_fallback(video_path, title):
@@ -327,10 +329,10 @@ st.markdown(
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    render_video_or_fallback(LOCAL_VIDEO_1, "Attorney Founding Story")
+    render_video_or_fallback(LOCAL_VIDEO_1, "Street Interviews")
 
 with col2:
-    render_video_or_fallback(LOCAL_VIDEO_2, "A Day in the Life of a Trial Lawyer")
+    render_video_or_fallback(LOCAL_VIDEO_2, "A Young Lawyer's Day")
 
 with col3:
     st.markdown("**Reserve Your Video**")
@@ -358,11 +360,12 @@ st.markdown(
 )
 col4, col5, col6 = st.columns(3)
 
+
 with col4:
-    render_video_or_fallback(LOCAL_VIDEO_1, "Supreme Court Victory Analysis")
+    render_video_or_fallback(LOCAL_VIDEO_3, "A Justice's Life")
 
 with col5:
-    render_video_or_fallback(LOCAL_VIDEO_2, "Legal Tech & Innovation Feature")
+    render_video_or_fallback(LOCAL_VIDEO_4, "An AI Lawyer's Career")
 
 with col6:
     st.markdown("**Reserve Your Video**")
@@ -391,10 +394,10 @@ st.markdown(
 col7, col8, col9 = st.columns(3)
 
 with col7:
-    render_video_or_fallback(LOCAL_VIDEO_1, "5 Common Contract Pitfalls to Avoid")
+    render_video_or_fallback(LOCAL_VIDEO_1, "Why You Need a Corporate Lawyer")
 
 with col8:
-    render_video_or_fallback(LOCAL_VIDEO_2, "Client Case Study & Outcome Breakdown")
+    render_video_or_fallback(LOCAL_VIDEO_2, "Setting Up a US Company")
 
 with col9:
     st.markdown("**Reserve Your Video**")
