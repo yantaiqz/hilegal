@@ -168,19 +168,34 @@ st.markdown(
         padding-left: 0.6rem;
     }
 
-    /* Reserve Card / Placeholder Box */
+    /* 统一所有视频与占位卡片的比例与高度 (16:9 Aspect Ratio) */
+    div[data-testid="stVideo"] {
+        width: 100% !important;
+        aspect-ratio: 16 / 9 !important;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    div[data-testid="stVideo"] video, div[data-testid="stVideo"] iframe {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    /* Reserve Card / Placeholder Box 强行保持 16:9 统一高度 */
     .reserve-card {
         background: #FFFFFF;
         border: 2px dashed #0A66C2;
         border-radius: 8px;
         padding: 1rem;
         text-align: center;
-        min-height: 200px;
+        aspect-ratio: 16 / 9;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        box-sizing: border-box;
+        margin-bottom: 0.5rem;
     }
     .reserve-card-title {
         font-size: 1rem;
@@ -191,7 +206,7 @@ st.markdown(
     .reserve-card-desc {
         font-size: 0.82rem;
         color: #666666;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0;
         line-height: 1.3;
     }
 
@@ -303,14 +318,26 @@ LOCAL_VIDEO_2 = "02.mov"
 LOCAL_VIDEO_3 = "03.mp4"
 LOCAL_VIDEO_4 = "04.mp4"
 
+# 视频 5 和 6 替换为您的实际 YouTube 链接 (示例占位)
+LOCAL_VIDEO_5 = "https://youtu.be/oxEZEpTFbdM?si=cCyakL16VWSENHuE"
+LOCAL_VIDEO_6 = "https://youtu.be/_ML6xoOS3ZE?si=1IShEo5sxY8YW5t7"
 
-def render_video_or_fallback(video_path, title):
+
+def render_video_or_fallback(video_path_or_url, title):
+    """支持本地视频文件及网络/YouTube链接的统一直播/渲染控件"""
     st.markdown(f"**{title}**")
-    try:
-        with open(video_path, "rb") as video_file:
-            st.video(video_file.read())
-    except FileNotFoundError:
-        st.info(f"📹 Case Sample: `{title}`")
+    # 判断是否为 URL 链接 (如 YouTube)
+    if isinstance(video_path_or_url, str) and (
+        video_path_or_url.startswith("http://")
+        or video_path_or_url.startswith("https://")
+    ):
+        st.video(video_path_or_url)
+    else:
+        try:
+            with open(video_path_or_url, "rb") as video_file:
+                st.video(video_file.read())
+        except FileNotFoundError:
+            st.info(f"📹 Case Sample: `{title}`")
 
 
 # 辅助函数：触发点击后滚动并设置状态
@@ -394,10 +421,10 @@ st.markdown(
 col7, col8, col9 = st.columns(3)
 
 with col7:
-    render_video_or_fallback(LOCAL_VIDEO_1, "Why You Need a Corporate Lawyer")
+    render_video_or_fallback(LOCAL_VIDEO_5, "Why You Need a Corporate Lawyer")
 
 with col8:
-    render_video_or_fallback(LOCAL_VIDEO_2, "Setting Up a US Company")
+    render_video_or_fallback(LOCAL_VIDEO_6, "Setting Up a US Company")
 
 with col9:
     st.markdown("**Reserve Your Video**")
@@ -421,7 +448,6 @@ st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 # ==========================================
 # 8. Form Submission Section (With Scroll Anchor)
 # ==========================================
-# 设置 HTML 锚点便于自动滚动到达
 st.markdown('<div id="generate-form"></div>', unsafe_allow_html=True)
 
 st.markdown(
