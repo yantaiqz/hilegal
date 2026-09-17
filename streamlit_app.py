@@ -515,6 +515,38 @@ with col6:
 
 
 # ==========================================
+# 5. Video Showcase Category 1: Personal Branding & Connection
+# ==========================================
+st.markdown(
+    '<div class="section-title">Personal Branding & Connection</div>',
+    unsafe_allow_html=True,
+)
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    render_video_or_fallback(LOCAL_VIDEO_1, "Street Interviews")
+
+with col2:
+    render_video_or_fallback(LOCAL_VIDEO_2, "A Young Lawyer's Day")
+
+with col3:
+    st.markdown('<div class="video-title">Reserve Your Video</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+    <div class="reserve-card">
+        <div class="reserve-card-title">✨ Personal Brand Showcase</div>
+        <div class="reserve-card-desc">Generate an authentic video introducing your background & law practice values.</div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    if st.button(
+        "✨ Select & Generate This Style", key="btn_cat_1"
+    ):
+        handle_select_category("Personal Branding & Connection")
+
+
+# ==========================================
 # 7. Video Showcase Category 3: Business Development & Lead Generation
 # ==========================================
 st.markdown(
@@ -547,37 +579,6 @@ with col9:
 
 st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 
-
-# ==========================================
-# 5. Video Showcase Category 1: Personal Branding & Connection
-# ==========================================
-st.markdown(
-    '<div class="section-title">Personal Branding & Connection</div>',
-    unsafe_allow_html=True,
-)
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    render_video_or_fallback(LOCAL_VIDEO_1, "Street Interviews")
-
-with col2:
-    render_video_or_fallback(LOCAL_VIDEO_2, "A Young Lawyer's Day")
-
-with col3:
-    st.markdown('<div class="video-title">Reserve Your Video</div>', unsafe_allow_html=True)
-    st.markdown(
-        """
-    <div class="reserve-card">
-        <div class="reserve-card-title">✨ Personal Brand Showcase</div>
-        <div class="reserve-card-desc">Generate an authentic video introducing your background & law practice values.</div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-    if st.button(
-        "✨ Select & Generate This Style", key="btn_cat_1"
-    ):
-        handle_select_category("Personal Branding & Connection")
 
 
 
