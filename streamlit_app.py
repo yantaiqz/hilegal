@@ -170,11 +170,12 @@ st.markdown(
 
 
 
-/* 1. 强制视频父级容器外框为统一的固定比例与高度 */
+    /* 1. 强制视频父级容器外框为统一的固定比例与高度 */
     div[data-testid="stVideo"] {
         width: 100% !important;
         aspect-ratio: 16 / 9 !important; /* 统一卡片比例为 16:9 */
         background-color: #000000;      /* 竖屏视频左右留黑边时背景统一 */
+        object-fit: contain !important; /* 保持比例，完整显示，留黑边 */
         border-radius: 8px;
         overflow: hidden;
         display: flex;
@@ -182,16 +183,12 @@ st.markdown(
         justify-content: center;
     }
 
+    
     /* 2. 针对 HTML5 video 元素和 YouTube iframe 的处理 */
     div[data-testid="stVideo"] video {
         width: 100% !important;
         height: 100% !important;
-        /* 选择一：使用 contain，完整展示视频不裁切，两旁自动填黑边，占用物理面积100%一致 */
         object-fit: contain !important; 
-
-        /* 选择二：如果希望全屏铺满无黑边（会裁剪竖屏上下部分），取消上面一行，使用下面这行：
-           object-fit: cover !important; 
-        */
     }
 
     div[data-testid="stVideo"] iframe {
