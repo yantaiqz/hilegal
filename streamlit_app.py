@@ -186,9 +186,10 @@ st.markdown(
     
     /* 2. 针对 HTML5 video 元素和 YouTube iframe 的处理 */
     div[data-testid="stVideo"] video {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important; 
+        object-fit: contain !important; /* 保持比例，完整显示，留黑边 */
+        margin: 0;
+        padding: 0;
+        display: block;
     }
 
     div[data-testid="stVideo"] iframe {
