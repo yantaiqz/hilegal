@@ -14,6 +14,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465  # SSL 端口
 SENDER_GMAIL = "ytqzytqz@gmail.com"
 SENDER_PASSWORD = "smqk khlq goxb rhdh"
+# 商务垂询 / 需求通知接收方（链接 § 页脚：dengxiaotong@fadada.com）
 RECEIVER_GMAIL = "ytqzytqz@gmail.com"
 
 # UV 记录持久化文件
@@ -33,7 +34,7 @@ VIDEO_FIT_MODE = "contain"
 # 邮件发送与 UV 处理逻辑
 # ==========================================
 def send_email_notification(
-    subject, body_text, sender_title="LinkedIn Video Bot"
+    subject, body_text, sender_title="HiLegal Video Bot"
 ):
     """通用发送 Gmail 通知函数"""
     message = MIMEText(body_text, "plain", "utf-8")
@@ -75,7 +76,7 @@ def track_and_get_daily_uv():
                 subject = f"🎉 Milestone Reached: {t} Daily UVs!"
                 body = f"Congratulations! Your app has reached {t} Unique Visitors (UV) today ({today_str}).\n\nCurrent Daily UV Count: {data['uv_count']}"
                 send_email_notification(
-                    subject, body, sender_title="UV Analytics Bot"
+                    subject, body, sender_title="HiLegal UV Bot"
                 )
 
         with open(UV_FILE, "w") as f:
@@ -88,12 +89,46 @@ current_daily_uv = track_and_get_daily_uv()
 
 if "selected_category" not in st.session_state:
     st.session_state.selected_category = None
+if "selected_package" not in st.session_state:
+    st.session_state.selected_package = None
+
+# ==========================================
+# HiLegal 套餐数据（来源：链接 § 2.0 / § 3.0）
+# 一次性视频制作套餐包，按单交付，非年付、非会员制
+# ==========================================
+PACKAGES = {
+    "Package A · 出镜起步包 $590": {
+        "price": "$590",
+        "tag": "适合：独立执业 / 个人所律师",
+        "points": [
+            "人工承制视频 × 4 条（每条 ≤60 秒）",
+            "每条含 1 轮免费修改（交付后 1–2 周内完成）",
+            "1 种第二语言字幕（英文配中文 / 中文配英文）",
+            "最多 2 人真人形象（律师本人 + 1 名同事/合伙人）",
+            "超额承制价 $150/分钟（原价 $200，长期适用）",
+            "HiLegal 平台一年展位",
+        ],
+    },
+    "Package B · 案源增长包 $1,990": {
+        "price": "$1,990",
+        "tag": "适合：中小律所（1–50 人）",
+        "points": [
+            "人工承制视频 × 8 条（每条 ≤60 秒）",
+            "电影级品牌片 × 1 条（90 秒，定制导演，3 轮修改）",
+            "选题策略会 × 1 次（一次定盘内容排期）",
+            "每条含 1 种第二语言字幕",
+            "真人形象配额更高（品牌片最多 5 人）",
+            "HiLegal 平台一年展位 · 优先展示",
+        ],
+    },
+}
+
 
 # ==========================================
 # 1. Page Configuration
 # ==========================================
 st.set_page_config(
-    page_title="LinkedIn Profile to Video Generator for Lawyers",
+    page_title="HiLegal · LinkedIn Profile to AI Video for Lawyers",
     page_icon="💼",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -166,6 +201,40 @@ VIDEO_CSS_TEMPLATE = """
         margin-bottom: 0.3rem;
     }
 
+    /* Price Comparison Banner (HiLegal 链接 § 1.1) */
+    .price-banner {
+        background: linear-gradient(135deg, #0A66C2, #004182);
+        color: #FFFFFF;
+        border-radius: 8px;
+        padding: 1.1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(10,102,194,0.2);
+    }
+    .price-banner-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+    }
+    .price-banner-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.92rem;
+    }
+    .price-banner-row .vs {
+        font-weight: 800;
+        background: rgba(255,255,255,0.18);
+        padding: 0.2rem 0.7rem;
+        border-radius: 20px;
+    }
+    .price-banner-foot {
+        margin-top: 0.6rem;
+        font-size: 0.85rem;
+        color: #D6E6F5;
+    }
+
     /* Section Header */
     .section-title {
         color: #181818;
@@ -179,36 +248,26 @@ VIDEO_CSS_TEMPLATE = """
 
     /* =========================================================
        视频画框统一化核心 CSS
-       Streamlit 1.64 的 stVideo 是 video / iframe 元素本身，
-       YouTube -> iframe.stVideo（自带 16:9）
-       本地文件 -> video.stVideo（无固定比例，必须强制覆盖）
-       这里同时兼容旧版本把 video/iframe 包在 div 里的结构。
        ========================================================= */
-
-    /* A. 画框本体：强制统一宽高比，与原始尺寸/横竖屏无关 */
     [data-testid="stVideo"] {
         width: 100% !important;
         aspect-ratio: __RATIO__ !important;
-        height: auto !important;          /* 由 aspect-ratio 推导高度 */
+        height: auto !important;
         min-height: 0 !important;
         max-height: none !important;
         margin: 0 !important;
-        background-color: #000000;        /* 黑边统一为黑色 */
+        background-color: #000000;
         border: none !important;
         border-radius: 8px;
         overflow: hidden;
         display: block;
         box-sizing: border-box;
     }
-
-    /* B. 画框本体就是 video / iframe 时（Streamlit 1.64）：靠 object-fit 缩放 */
     video[data-testid="stVideo"],
     iframe[data-testid="stVideo"] {
         object-fit: __FIT__ !important;
         object-position: center !important;
     }
-
-    /* C. 旧版本 Streamlit：video/iframe 被包在 div[data-testid="stVideo"] 内 */
     [data-testid="stVideo"] > video,
     [data-testid="stVideo"] > iframe {
         width: 100% !important;
@@ -221,8 +280,6 @@ VIDEO_CSS_TEMPLATE = """
         background-color: #000000;
         display: block;
     }
-
-    /* D. 视频标题：固定高度，避免标题长短不一导致上下错位 */
     .video-title {
         font-size: 0.9rem;
         font-weight: 600;
@@ -234,13 +291,7 @@ VIDEO_CSS_TEMPLATE = """
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-    /* E. 视频下方占位块：与右侧按钮等高，保证三列底部对齐（不需要可删除） */
-    .video-cell-spacer {
-        height: 2.8rem;
-    }
-
-    /* F. 视频文件缺失时的占位卡：面积与画框完全一致 */
+    .video-cell-spacer { height: 2.8rem; }
     .video-placeholder {
         width: 100% !important;
         aspect-ratio: __RATIO__ !important;
@@ -257,18 +308,10 @@ VIDEO_CSS_TEMPLATE = """
         padding: 1rem;
         color: #0A66C2;
     }
-    .video-placeholder-title {
-        font-size: 1rem;
-        font-weight: 700;
-        margin-top: 0.3rem;
-        margin-bottom: 0.3rem;
-    }
-    .video-placeholder-desc {
-        font-size: 0.8rem;
-        color: #666666;
-    }
+    .video-placeholder-title { font-size: 1rem; font-weight: 700; margin: 0.3rem 0; }
+    .video-placeholder-desc { font-size: 0.8rem; color: #666666; }
 
-    /* G. 招商/占位卡片：同样使用统一画框比例 */
+    /* Reserve / Package Cards */
     .reserve-card {
         background: #FFFFFF;
         border: 2px dashed #0A66C2;
@@ -284,19 +327,23 @@ VIDEO_CSS_TEMPLATE = """
         box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         box-sizing: border-box;
     }
+    .reserve-card-title { font-size: 1rem; font-weight: 700; color: #0A66C2; margin-bottom: 0.4rem; }
+    .reserve-card-desc { font-size: 0.82rem; color: #666666; margin-bottom: 0; line-height: 1.3; }
 
-    .reserve-card-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #0A66C2;
-        margin-bottom: 0.4rem;
+    .package-card {
+        background: #FFFFFF;
+        border: 2px solid #0A66C2;
+        border-radius: 10px;
+        padding: 1.1rem 1.2rem;
+        box-shadow: 0 2px 6px rgba(10,102,194,0.12);
+        box-sizing: border-box;
     }
-    .reserve-card-desc {
-        font-size: 0.82rem;
-        color: #666666;
-        margin-bottom: 0;
-        line-height: 1.3;
-    }
+    .package-card.flag { border-color: #c9a24b; }
+    .package-price { font-size: 1.5rem; font-weight: 800; color: #0A66C2; }
+    .package-price span { font-size: 0.8rem; font-weight: 600; color: #5E5E5E; }
+    .package-tag { font-size: 0.82rem; color: #5E5E5E; margin: 0.2rem 0 0.6rem; }
+    .package-points { margin: 0; padding-left: 1.1rem; }
+    .package-points li { font-size: 0.84rem; color: #333333; margin-bottom: 0.35rem; }
 
     /* Form & Banner Highlight */
     .active-selection-banner {
@@ -308,11 +355,7 @@ VIDEO_CSS_TEMPLATE = """
         margin-bottom: 1.2rem;
         animation: fadeIn 0.4s ease-in-out;
     }
-    .active-selection-banner h4 {
-        margin: 0 0 0.3rem 0;
-        color: #0A66C2;
-        font-size: 1.05rem;
-    }
+    .active-selection-banner h4 { margin: 0 0 0.3rem 0; color: #0A66C2; font-size: 1.05rem; }
 
     /* Streamlit Button Overrides */
     .stButton>button {
@@ -326,9 +369,7 @@ VIDEO_CSS_TEMPLATE = """
         font-size: 0.88rem !important;
         transition: background-color 0.2s ease;
     }
-    .stButton>button:hover {
-        background-color: #004182 !important;
-    }
+    .stButton>button:hover { background-color: #004182 !important; }
 
     /* Notice Box */
     .notice-box {
@@ -382,8 +423,8 @@ st.markdown(
 st.markdown(
     """
 <div class="main-header">
-    <div class="main-title">LinkedIn Profile to AI Professional Video</div>
-    <div class="main-subtitle">Turn your LinkedIn profile into high-converting video content tailored for legal marketing</div>
+    <div class="main-title">HiLegal · 海外律师 AI 视频制作</div>
+    <div class="main-subtitle">把 LinkedIn 主页变成高转化的法律获客视频 · Turn your LinkedIn profile into high-converting legal marketing videos</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -401,6 +442,22 @@ st.markdown(
         <li><b>2. Professional Credibility:</b> Showcase case wins, legal expertise, and industry thought leadership.</li>
         <li><b>3. Business Development & Lead Generation:</b> Address client pain points, provide actionable legal solutions, and drive inbound leads.</li>
     </ul>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# 价格对比横幅（链接 § 1.1）
+st.markdown(
+    """
+<div class="price-banner">
+    <div class="price-banner-title">💰 十分之一的价格，做得出来的获客视频</div>
+    <div class="price-banner-row">
+        <div>传统律所营销 $2,000–5,000 / 分钟（4–8 周）</div>
+        <div class="vs">VS</div>
+        <div>HiLegal AI 承制 $200 / 分钟（1–2 周）</div>
+    </div>
+    <div class="price-banner-foot">同样的预算，传统渠道只够做 1 条，HiLegal 承制约可做 10 条。</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -464,15 +521,32 @@ def render_video_or_fallback(video_path_or_url, title):
                 "video/mp4",
             )
             try:
-                # 直接传文件路径（Streamlit 通过 media 接口提供，避免把整段视频
-                # base64 塞进页面，加载更快、内存占用更低）
                 st.video(video_path_or_url, format=mime)
             except TypeError:
-                # 旧版本不支持 format 参数时的兜底
                 st.video(video_path_or_url)
 
-    # 与右侧按钮等高的占位块，保证三列底部对齐（如不需要可删除本行）
     st.markdown('<div class="video-cell-spacer"></div>', unsafe_allow_html=True)
+
+
+def render_package_card(key, flag=False):
+    """渲染 HiLegal 套餐卡片"""
+    p = PACKAGES[key]
+    st.markdown(f'<div class="video-title">{key}</div>', unsafe_allow_html=True)
+    bullets = "".join(f"<li>{pt}</li>" for pt in p["points"])
+    cls = "package-card flag" if flag else "package-card"
+    st.markdown(
+        f"""
+    <div class="{cls}">
+        <div class="package-price">{p['price']}<span> 一次性</span></div>
+        <div class="package-tag">{p['tag']}</div>
+        <ul class="package-points">{bullets}</ul>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    if st.button(f"✅ 选择此套餐 / Select {p['price']}", key=f"pkg_{key}"):
+        st.session_state.selected_package = key
+        st.session_state.trigger_scroll = True
 
 
 # 辅助函数：触发点击后滚动并设置状态
@@ -509,7 +583,7 @@ with col6:
         unsafe_allow_html=True,
     )
     if st.button(
-        "✨ Select & Generate This Style", key="btn_cat_2"
+        "✨ Select Style", key="btn_cat_2"
     ):
         handle_select_category("Professional Credibility")
 
@@ -541,7 +615,7 @@ with col3:
         unsafe_allow_html=True,
     )
     if st.button(
-        "✨ Select & Generate This Style", key="btn_cat_1"
+        "✨ Select Style", key="btn_cat_1"
     ):
         handle_select_category("Personal Branding & Connection")
 
@@ -573,13 +647,28 @@ with col9:
         unsafe_allow_html=True,
     )
     if st.button(
-        "✨ Select & Generate This Style", key="btn_cat_3"
+        "✨ Select Style", key="btn_cat_3"
     ):
         handle_select_category("Business Development & Lead Generation")
 
+st.markdown("<br>", unsafe_allow_html=True)
+
+
+# ==========================================
+# 7.5 HiLegal 套餐选择（来源链接 § 2.0 / § 3.0）
+# ==========================================
+st.markdown(
+    '<div class="section-title">🎁 HiLegal 视频制作套餐（一次性套餐包，非会员制）</div>',
+    unsafe_allow_html=True,
+)
+pkg_cols = st.columns(2)
+pkg_keys = list(PACKAGES.keys())
+with pkg_cols[0]:
+    render_package_card(pkg_keys[0], flag=False)
+with pkg_cols[1]:
+    render_package_card(pkg_keys[1], flag=True)
+
 st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
-
-
 
 
 # ==========================================
@@ -588,16 +677,18 @@ st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 st.markdown('<div id="generate-form"></div>', unsafe_allow_html=True)
 
 st.markdown(
-    '<div class="section-title">✨ Generate Your Personalized Video</div>',
+    '<div class="section-title">✨ 生成你的定制视频 / Generate Your Personalized Video</div>',
     unsafe_allow_html=True,
 )
 
-# 高亮已选类别提示
-if st.session_state.selected_category:
+# 高亮已选类别 / 套餐提示
+if st.session_state.selected_category or st.session_state.selected_package:
+    cat = st.session_state.selected_category or "未指定风格 / No style"
+    pkg = st.session_state.selected_package or "未选择套餐 / No package"
     st.markdown(
         f"""
     <div class="active-selection-banner">
-        <h4>🎯 Selected Style: <b>{st.session_state.selected_category}</b></h4>
+        <h4>🎯 已选风格: <b>{cat}</b> ｜ 套餐: <b>{pkg}</b></h4>
         <p style="margin: 0; color: #5E5E5E; font-size: 0.9rem;">
             Please enter your LinkedIn profile and email below. Your custom video will be tailored specifically for this marketing objective!
         </p>
@@ -607,7 +698,7 @@ if st.session_state.selected_category:
     )
 else:
     st.info(
-        "💡 Click any of the 'Select & Generate This Style' buttons above to choose a content style, or fill out the form directly!"
+        "💡 Click any 'Select Style' or 'Select Package' button above, or fill out the form directly!"
     )
 
 with st.form(key="video_request_form"):
@@ -620,20 +711,28 @@ with st.form(key="video_request_form"):
         "Email Address to Receive Video", placeholder="yourname@example.com"
     )
 
-    # Terms
+    package_sel = st.selectbox(
+        "选择套餐 / Select Package",
+        ["— 暂不选择 / No package yet —"] + list(PACKAGES.keys()),
+    )
+
+    # Terms（对齐链接 § 6.0 适用说明）
     st.markdown(
         """
     <div class="notice-box">
-        💡 <b>Notes & Terms:</b><br>
-        1. Video generation is completely <b>FREE</b>.<br>
-        2. By submitting, you agree that the generated video may be featured on our site for showcase and demonstration purposes.
+        💡 <b>Notes & Terms（条款说明）:</b><br>
+        1. 本服务为<b>一次性视频制作套餐包</b>（非会员制、非年付），按单交付。<br>
+        2. HiLegal 会员可<b>免费样片试做 1 条</b>，满意后付费；正式套餐为付费项目（套餐 A $590 / 套餐 B $1,990）。<br>
+        3. 交付周期：承制视频 <b>1–2 周</b>，电影级品牌片 <b>3–4 周</b>。<br>
+        4. 两个套餐均<b>不含数字分身</b>；语言权益为<b>第二语言字幕</b>（每条 1 种）。<br>
+        5. 提交即表示同意：生成素材权属归<b>律师本人及律所所有</b>，样片可用于本站展示。
     </div>
     """,
         unsafe_allow_html=True,
     )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    submit_button = st.form_submit_button(label="Generate Video Now for Free")
+    submit_button = st.form_submit_button(label="提交需求 / Submit Request")
 
 # 提交处理
 if submit_button:
@@ -653,16 +752,20 @@ if submit_button:
             if st.session_state.selected_category
             else "General Showcase"
         )
-        mail_subject = "🚀 New Lawyer Video Request Submitted"
+        chosen_pkg = (
+            package_sel
+            if package_sel != "— 暂不选择 / No package yet —"
+            else (st.session_state.selected_package or "General Showcase")
+        )
+        mail_subject = "🚀 HiLegal 新视频需求提交 / New Lawyer Video Request"
         mail_body = f"""
         A new user has submitted a video request!
 
-        ▪ Selected Category: {chosen_cat}
+        ▪ Selected Style: {chosen_cat}
+        ▪ Selected Package: {chosen_pkg}
 
         ▪ LinkedIn Profile: {linkedin_url}
-
         ▪ User Email: {email}
-
         """
 
         with st.spinner("Submitting your request..."):
@@ -671,7 +774,8 @@ if submit_button:
         if success:
             st.success("✅ Submitted Successfully!")
             st.info(
-                f"📨 We have received your request for {chosen_cat}. Your custom video will be delivered to {email} within 24 hours!"
+                f"📨 We have received your request ({chosen_pkg}). "
+                f"Your custom video will be delivered to {email} within 1–2 weeks!"
             )
         else:
             st.error(f"⚠️ Failed to send notification: {err_msg}")
@@ -694,7 +798,7 @@ if st.session_state.get("trigger_scroll", False):
 st.markdown(
     f"""
 <div class="footer">
-    © 2026 LinkedIn Video Generator for Lawyers. All rights reserved. | 
+    © 2026 HiLegal × 律镜 · 商务垂询 dengxiaotong@fadada.com ｜ 美国 · 加拿大 · 澳洲 · 英国 · 新加坡<br>
     Daily Unique Visitors (UV): <span class="uv-badge">👤 {current_daily_uv}</span>
 </div>
 """,
