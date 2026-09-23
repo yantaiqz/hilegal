@@ -19,6 +19,15 @@ RECEIVER_GMAIL = "ytqzytqz@gmail.com"
 # UV 记录持久化文件
 UV_FILE = "uv_tracker.json"
 
+# ==========================================
+# 视频画框统一配置（改这里即可全局生效）
+# ==========================================
+# 统一画框宽高比。素材以竖屏为主时，建议改为 "4 / 5" 或 "1 / 1"
+VIDEO_FRAME_RATIO = "16 / 9"
+# contain = 完整显示、两侧/上下补黑边（不裁切，推荐）
+# cover   = 铺满画框、无黑边（会裁掉竖屏的上下部分）
+VIDEO_FIT_MODE = "contain"
+
 
 # ==========================================
 # 邮件发送与 UV 处理逻辑
@@ -93,8 +102,8 @@ st.set_page_config(
 # ==========================================
 # 2. Refined UI/UX CSS Styling
 # ==========================================
-st.markdown(
-    """
+# 说明：用 __RATIO__ / __FIT__ 占位符替换，避免 CSS 花括号与 f-string 冲突
+VIDEO_CSS_TEMPLATE = """
 <style>
     /* Global Styling */
     .stApp {
@@ -156,7 +165,7 @@ st.markdown(
         color: #333333;
         margin-bottom: 0.3rem;
     }
-    
+
     /* Section Header */
     .section-title {
         color: #181818;
@@ -168,44 +177,106 @@ st.markdown(
         padding-left: 0.6rem;
     }
 
+    /* =========================================================
+       视频画框统一化核心 CSS
+       Streamlit 1.64 的 stVideo 是 video / iframe 元素本身，
+       YouTube -> iframe.stVideo（自带 16:9）
+       本地文件 -> video.stVideo（无固定比例，必须强制覆盖）
+       这里同时兼容旧版本把 video/iframe 包在 div 里的结构。
+       ========================================================= */
 
-
-    /* 1. 强制视频父级容器外框为统一的固定比例与高度 */
-    div[data-testid="stVideo"] {
+    /* A. 画框本体：强制统一宽高比，与原始尺寸/横竖屏无关 */
+    [data-testid="stVideo"] {
         width: 100% !important;
-        aspect-ratio: 16 / 9 !important; /* 统一卡片比例为 16:9 */
-        background-color: #000000;      /* 竖屏视频左右留黑边时背景统一 */
-        object-fit: contain !important; /* 保持比例，完整显示，留黑边 */
+        aspect-ratio: __RATIO__ !important;
+        height: auto !important;          /* 由 aspect-ratio 推导高度 */
+        min-height: 0 !important;
+        max-height: none !important;
+        margin: 0 !important;
+        background-color: #000000;        /* 黑边统一为黑色 */
+        border: none !important;
         border-radius: 8px;
         overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: block;
+        box-sizing: border-box;
     }
 
-    
-    /* 2. 针对 HTML5 video 元素和 YouTube iframe 的处理 */
-    div[data-testid="stVideo"] video {
-        object-fit: contain !important; /* 保持比例，完整显示，留黑边 */
-        margin: 0;
-        padding: 0;
+    /* B. 画框本体就是 video / iframe 时（Streamlit 1.64）：靠 object-fit 缩放 */
+    video[data-testid="stVideo"],
+    iframe[data-testid="stVideo"] {
+        object-fit: __FIT__ !important;
+        object-position: center !important;
+    }
+
+    /* C. 旧版本 Streamlit：video/iframe 被包在 div[data-testid="stVideo"] 内 */
+    [data-testid="stVideo"] > video,
+    [data-testid="stVideo"] > iframe {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+        object-fit: __FIT__ !important;
+        object-position: center !important;
+        border: none !important;
+        background-color: #000000;
         display: block;
     }
 
-    div[data-testid="stVideo"] iframe {
-        width: 100% !important;
-        height: 100% !important;
-        border: none;
+    /* D. 视频标题：固定高度，避免标题长短不一导致上下错位 */
+    .video-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #181818;
+        margin: 0 0 0.4rem 0.2rem;
+        min-height: 1.4rem;
+        line-height: 1.4rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* 3. 确保占位卡片（Reserve Card）与视频容器完全同高同面积 */
+    /* E. 视频下方占位块：与右侧按钮等高，保证三列底部对齐（不需要可删除） */
+    .video-cell-spacer {
+        height: 2.8rem;
+    }
+
+    /* F. 视频文件缺失时的占位卡：面积与画框完全一致 */
+    .video-placeholder {
+        width: 100% !important;
+        aspect-ratio: __RATIO__ !important;
+        height: auto !important;
+        background: #FFFFFF;
+        border: 2px dashed #0A66C2;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        box-sizing: border-box;
+        padding: 1rem;
+        color: #0A66C2;
+    }
+    .video-placeholder-title {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-top: 0.3rem;
+        margin-bottom: 0.3rem;
+    }
+    .video-placeholder-desc {
+        font-size: 0.8rem;
+        color: #666666;
+    }
+
+    /* G. 招商/占位卡片：同样使用统一画框比例 */
     .reserve-card {
         background: #FFFFFF;
         border: 2px dashed #0A66C2;
         border-radius: 8px;
         padding: 1rem;
         text-align: center;
-        aspect-ratio: 16 / 9; /* 保证与 16:9 的视频框面积完全一致 */
+        aspect-ratio: __RATIO__;
+        height: auto !important;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -296,7 +367,12 @@ st.markdown(
         to { opacity: 1; transform: translateY(0); }
     }
 </style>
-""",
+"""
+
+st.markdown(
+    VIDEO_CSS_TEMPLATE.replace("__RATIO__", VIDEO_FRAME_RATIO).replace(
+        "__FIT__", VIDEO_FIT_MODE
+    ),
     unsafe_allow_html=True,
 )
 
@@ -339,22 +415,64 @@ LOCAL_VIDEO_4 = "04.mp4"
 LOCAL_VIDEO_5 = "https://youtu.be/oxEZEpTFbdM?si=cCyakL16VWSENHuE"
 LOCAL_VIDEO_6 = "https://youtu.be/_ML6xoOS3ZE?si=1IShEo5sxY8YW5t7"
 
+# 常见视频扩展名 -> MIME（避免 .mov 等被当成 video/mp4 导致无法播放）
+VIDEO_MIME_MAP = {
+    ".mp4": "video/mp4",
+    ".m4v": "video/x-m4v",
+    ".mov": "video/quicktime",
+    ".webm": "video/webm",
+    ".avi": "video/x-msvideo",
+    ".mkv": "video/x-matroska",
+    ".ogv": "video/ogg",
+}
+
+
+def is_url(value) -> bool:
+    return isinstance(value, str) and value.startswith(
+        ("http://", "https://")
+    )
+
+
+def render_video_placeholder(title):
+    """视频缺失时渲染与画框等面积的占位卡"""
+    st.markdown(
+        f"""
+    <div class="video-placeholder">
+        <div style="font-size: 1.6rem;">📹</div>
+        <div class="video-placeholder-title">{title}</div>
+        <div class="video-placeholder-desc">Sample coming soon</div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
 
 def render_video_or_fallback(video_path_or_url, title):
-    """支持本地视频文件及网络/YouTube链接的统一直播/渲染控件"""
-    st.markdown(f"**{title}**")
-    # 判断是否为 URL 链接 (如 YouTube)
-    if isinstance(video_path_or_url, str) and (
-        video_path_or_url.startswith("http://")
-        or video_path_or_url.startswith("https://")
-    ):
+    """统一渲染本地视频 / YouTube 链接，画框面积恒定"""
+    st.markdown(
+        f'<div class="video-title">{title}</div>', unsafe_allow_html=True
+    )
+
+    if is_url(video_path_or_url):
         st.video(video_path_or_url)
     else:
-        try:
-            with open(video_path_or_url, "rb") as video_file:
-                st.video(video_file.read())
-        except FileNotFoundError:
-            st.info(f"📹 Case Sample: `{title}`")
+        if not os.path.exists(video_path_or_url):
+            render_video_placeholder(title)
+        else:
+            mime = VIDEO_MIME_MAP.get(
+                os.path.splitext(str(video_path_or_url))[1].lower(),
+                "video/mp4",
+            )
+            try:
+                # 直接传文件路径（Streamlit 通过 media 接口提供，避免把整段视频
+                # base64 塞进页面，加载更快、内存占用更低）
+                st.video(video_path_or_url, format=mime)
+            except TypeError:
+                # 旧版本不支持 format 参数时的兜底
+                st.video(video_path_or_url)
+
+    # 与右侧按钮等高的占位块，保证三列底部对齐（如不需要可删除本行）
+    st.markdown('<div class="video-cell-spacer"></div>', unsafe_allow_html=True)
 
 
 # 辅助函数：触发点击后滚动并设置状态
@@ -380,7 +498,7 @@ with col5:
     render_video_or_fallback(LOCAL_VIDEO_4, "An AI Lawyer's Career")
 
 with col6:
-    st.markdown("**Reserve Your Video**")
+    st.markdown('<div class="video-title">Reserve Your Video</div>', unsafe_allow_html=True)
     st.markdown(
         """
     <div class="reserve-card">
@@ -394,40 +512,6 @@ with col6:
         "✨ Select & Generate This Style", key="btn_cat_2"
     ):
         handle_select_category("Professional Credibility")
-
-
-# ==========================================
-# 7. Video Showcase Category 3: Business Development & Lead Generation
-# ==========================================
-st.markdown(
-    '<div class="section-title">Business Development & Lead Generation</div>',
-    unsafe_allow_html=True,
-)
-col7, col8, col9 = st.columns(3)
-
-with col7:
-    render_video_or_fallback(LOCAL_VIDEO_5, "Why You Need a Corporate Lawyer")
-
-with col8:
-    render_video_or_fallback(LOCAL_VIDEO_6, "Setting Up a US Company")
-
-with col9:
-    st.markdown("**Reserve Your Video**")
-    st.markdown(
-        """
-    <div class="reserve-card">
-        <div class="reserve-card-title">✨ Lead Gen Showcase</div>
-        <div class="reserve-card-desc">Address client legal challenges directly and turn viewers into consultations.</div>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-    if st.button(
-        "✨ Select & Generate This Style", key="btn_cat_3"
-    ):
-        handle_select_category("Business Development & Lead Generation")
-
-st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 
 
 # ==========================================
@@ -446,7 +530,7 @@ with col2:
     render_video_or_fallback(LOCAL_VIDEO_2, "A Young Lawyer's Day")
 
 with col3:
-    st.markdown("**Reserve Your Video**")
+    st.markdown('<div class="video-title">Reserve Your Video</div>', unsafe_allow_html=True)
     st.markdown(
         """
     <div class="reserve-card">
@@ -460,6 +544,41 @@ with col3:
         "✨ Select & Generate This Style", key="btn_cat_1"
     ):
         handle_select_category("Personal Branding & Connection")
+
+
+# ==========================================
+# 7. Video Showcase Category 3: Business Development & Lead Generation
+# ==========================================
+st.markdown(
+    '<div class="section-title">Business Development & Lead Generation</div>',
+    unsafe_allow_html=True,
+)
+col7, col8, col9 = st.columns(3)
+
+with col7:
+    render_video_or_fallback(LOCAL_VIDEO_5, "Why You Need a Corporate Lawyer")
+
+with col8:
+    render_video_or_fallback(LOCAL_VIDEO_6, "Setting Up a US Company")
+
+with col9:
+    st.markdown('<div class="video-title">Reserve Your Video</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+    <div class="reserve-card">
+        <div class="reserve-card-title">✨ Lead Gen Showcase</div>
+        <div class="reserve-card-desc">Address client legal challenges directly and turn viewers into consultations.</div>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    if st.button(
+        "✨ Select & Generate This Style", key="btn_cat_3"
+    ):
+        handle_select_category("Business Development & Lead Generation")
+
+st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
+
 
 
 
@@ -488,7 +607,7 @@ if st.session_state.selected_category:
     )
 else:
     st.info(
-        "💡 Click any of the **'Select & Generate This Style'** buttons above to choose a content style, or fill out the form directly!"
+        "💡 Click any of the 'Select & Generate This Style' buttons above to choose a content style, or fill out the form directly!"
     )
 
 with st.form(key="video_request_form"):
@@ -538,9 +657,12 @@ if submit_button:
         mail_body = f"""
         A new user has submitted a video request!
 
-        - Selected Category: {chosen_cat}
-        - LinkedIn Profile: {linkedin_url}
-        - User Email: {email}
+        ▪ Selected Category: {chosen_cat}
+
+        ▪ LinkedIn Profile: {linkedin_url}
+
+        ▪ User Email: {email}
+
         """
 
         with st.spinner("Submitting your request..."):
@@ -549,7 +671,7 @@ if submit_button:
         if success:
             st.success("✅ Submitted Successfully!")
             st.info(
-                f"📨 We have received your request for **{chosen_cat}**. Your custom video will be delivered to **{email}** within **24 hours**!"
+                f"📨 We have received your request for {chosen_cat}. Your custom video will be delivered to {email} within 24 hours!"
             )
         else:
             st.error(f"⚠️ Failed to send notification: {err_msg}")
