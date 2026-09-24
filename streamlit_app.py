@@ -174,8 +174,8 @@ VALUE_ADDED_TABLE = [
 LOCAL_VIDEO_3 = "https://youtu.be/3ev59ajEsaU?si=WjGqxdAdH0H0TOIF"
 LOCAL_VIDEO_4 = "https://youtu.be/Dkc9sDc-2Fw"
 
-LOCAL_VIDEO_1 = "https://youtube.com/shorts/AoMtIKUfS1c?si=4pRbR8AFUKz1Agde"
-LOCAL_VIDEO_2 = "https://www.youtube.com/shorts/Hgk1mvwI_Dw"
+LOCAL_VIDEO_1 = "https://www.youtube.com/watch?v=AoMtIKUfS1c"
+LOCAL_VIDEO_2 = "https://www.youtube.com/watch?v=Hgk1mvwI_Dw"
 
 
 LOCAL_VIDEO_5 = "https://youtu.be/xlbN0I4UKKQ?si=r_sYpatOkgISfdyB"
