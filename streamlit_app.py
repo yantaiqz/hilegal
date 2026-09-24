@@ -212,6 +212,15 @@ CSS_TEMPLATE = """
         font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         color: #1C2B3A;
     }
+    
+    /* === 2. 彻底去除顶部留白 === */
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+    [data-testid="stToolbar"] {
+        display: none !important;
+    }
+    
     .block-container { padding-top: 1.4rem !important; padding-bottom: 3rem !important; max-width: 1120px; }
 
     /* 语言切换工具条 */
