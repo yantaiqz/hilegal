@@ -440,7 +440,7 @@ def section_header(eyebrow, title):
 
 
 # --- 第一行：电影品质视频 ---
-section_header(L('作品集 · 01', 'Showreel · 01'), L('电影品质视频', 'The Chinese Partner of a UK Firm'))
+section_header(L('作品集 · 01', 'Showreel · 01'), L('电影品质视频', 'Cinematic Brand Films'))
 r1 = st.columns(3)
 with r1[0]:
     render_video_or_fallback(LOCAL_VIDEO_3, L("英国百年律所的中国女合伙人", "A Justice Life"))
