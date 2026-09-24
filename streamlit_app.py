@@ -440,12 +440,12 @@ def section_header(eyebrow, title):
 
 
 # --- 第一行：电影品质视频 ---
-section_header(L('作品集 · 01', 'Showreel · 01'), L('电影品质视频', 'Cinematic-Quality Videos'))
+section_header(L('作品集 · 01', 'Showreel · 01'), L('电影品质视频', 'The Chinese Partner of a UK Firm'))
 r1 = st.columns(3)
 with r1[0]:
-    render_video_or_fallback(LOCAL_VIDEO_3, L("大法官的人生", "A Justice Life"))
+    render_video_or_fallback(LOCAL_VIDEO_3, L("英国百年律所的中国女合伙人", "A Justice Life"))
 with r1[1]:
-    render_video_or_fallback(LOCAL_VIDEO_4, L("AI 律师的职业路", "An AI Lawyer Career"))
+    render_video_or_fallback(LOCAL_VIDEO_4, L("律师的AI短剧", "AI Short Drama for Lawyers"))
 with r1[2]:
     render_reserve_card(
         "cinematic", L("你的品牌大片", "Your Brand Film"),
@@ -457,9 +457,9 @@ with r1[2]:
 section_header(L('作品集 · 02', 'Showreel · 02'), L('承接制作视频', 'Hand-Produced Videos'))
 r2 = st.columns(3)
 with r2[0]:
-    render_video_or_fallback(LOCAL_VIDEO_1, L("街头访谈实录", "Street Interviews"))
+    render_video_or_fallback(LOCAL_VIDEO_1, L("慕尼黑的中国律师", "The Chinese Lawyer in Munich"))
 with r2[1]:
-    render_video_or_fallback(LOCAL_VIDEO_2, L("年轻律师的一天", "A Young Lawyer Day"))
+    render_video_or_fallback(LOCAL_VIDEO_2, L("年轻律师的一天", "A Young Lawyers Day"))
 with r2[2]:
     render_reserve_card(
         "produced", L("你的执业介绍", "Your Practice Intro"),
@@ -471,9 +471,9 @@ with r2[2]:
 section_header(L('作品集 · 03', 'Showreel · 03'), L('访谈视频', 'Interview Videos'))
 r3 = st.columns(3)
 with r3[0]:
-    render_video_or_fallback(LOCAL_VIDEO_5, L("为什么你需要公司法律师", "Why You Need a Corporate Lawyer"))
+    render_video_or_fallback(LOCAL_VIDEO_5, L("对话LDH创始人Zach", "A Conversation with Zach, Founder of LDH"))
 with r3[1]:
-    render_video_or_fallback(LOCAL_VIDEO_6, L("在美国注册公司全流程", "Setting Up a US Company"))
+    render_video_or_fallback(LOCAL_VIDEO_6, L("英国律师分享", "UK Lawyer Shares Legal Tips"))
 with r3[2]:
     render_reserve_card(
         "interview", L("你的深度访谈", "Your Deep-Dive Interview"),
