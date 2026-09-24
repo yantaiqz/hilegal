@@ -14,7 +14,7 @@ SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 465  # SSL 端口
 SENDER_GMAIL = "ytqzytqz@gmail.com"
 SENDER_PASSWORD = "smqk khlq goxb rhdh"
-# 商务垂询 / 需求通知接收方（链接 § 页脚：dengxiaotong@fadada.com）
+# 商务垂询 / 需求通知接收方（方案 § 导言：dengxiaotong@fadada.com）
 RECEIVER_GMAIL = "ytqzytqz@gmail.com"
 
 # UV 记录持久化文件
@@ -93,35 +93,75 @@ if "selected_package" not in st.session_state:
     st.session_state.selected_package = None
 
 # ==========================================
-# HiLegal 套餐数据（来源：链接 § 2.0 / § 3.0）
-# 一次性视频制作套餐包，按单交付，非年付、非会员制
+# HiLegal 套餐数据（来源：方案 § 2.0 套餐总览 / § 3.0 套餐详情）
+# 一次性视频制作套餐包，按单交付，非年付、非会员制；价格单位 USD
 # ==========================================
 PACKAGES = {
     "Package A · 出镜起步包 $590": {
         "price": "$590",
-        "tag": "适合：独立执业 / 个人所律师",
+        "origin": "原价 $990",
+        "mode": "AI 生成视频",
+        "tag": "适合：独立执业 / 个人所律师，首次尝试视频获客",
         "points": [
-            "人工承制视频 × 4 条（每条 ≤60 秒）",
+            "人工承制视频 × 4 条（每条 ≤60 秒；单买 $250/条 × 4 = $1,000）",
+            "套餐折后价 $590（原价 $990）",
             "每条含 1 轮免费修改（交付后 1–2 周内完成）",
-            "1 种第二语言字幕（英文配中文 / 中文配英文）",
+            "1 种第二语言字幕（英文视频配中文字幕 / 中文视频配英文字幕）",
             "最多 2 人真人形象（律师本人 + 1 名同事/合伙人）",
-            "超额承制价 $150/分钟（原价 $200，长期适用）",
+            "超额承制价 $150/分钟（原价 $250/分钟，自购买起一年内有效）",
             "HiLegal 平台一年展位",
         ],
     },
     "Package B · 案源增长包 $1,990": {
         "price": "$1,990",
-        "tag": "适合：中小律所（1–50 人）",
+        "origin": "原价 $2,990",
+        "mode": "AI 生成视频",
+        "tag": "适合：中小律所（1–50 人），或已验证视频获客、需要体系化产出",
         "points": [
-            "人工承制视频 × 8 条（每条 ≤60 秒）",
-            "电影级品牌片 × 1 条（90 秒，定制导演，3 轮修改）",
-            "选题策略会 × 1 次（一次定盘内容排期）",
-            "每条含 1 种第二语言字幕",
-            "真人形象配额更高（品牌片最多 5 人）",
+            "人工承制视频 × 8 条（每条 ≤60 秒，每条含 1 轮免费修改，1–2 周交付）",
+            "电影级品牌片 × 1 条（90 秒律所品牌 / 招聘片，定制导演 + 实拍与 AI 混合，3–4 周交付，含 3 轮免费修改）",
+            "选题策略会 × 1 次（认识律师、确定目标、运营定选题，一次定盘内容排期）",
+            "每条含 1 种第二语言字幕（更多语言按增值表加购）",
+            "真人形象配额更高：承制视频最多 2 人；品牌片最多 5 人，可覆盖整个合伙人团队",
+            "超额承制价 $150/分钟（原价 $250/分钟，自购买起一年内有效）",
             "HiLegal 平台一年展位 · 优先展示",
         ],
     },
+    "Package C · 人工访谈套餐 $1,990": {
+        "price": "$1,990",
+        "origin": "无折后（真人出镜拍摄）",
+        "mode": "真人出镜拍摄",
+        "tag": "适合：以深度内容建立专业权威，并直接触达中国跨境法律市场",
+        "points": [
+            "访谈中视频 × 1 条（10–20 分钟深度访谈成片，律师真人出镜对谈，体系化呈现执业领域与专业观点）",
+            "短视频 × 3 条（每条约 60 秒，从访谈内容剪辑精华片段，适合社媒传播）",
+            "每条含 1 轮免费修改（交付后完成）",
+            "每条含 1 种第二语言字幕（更多语言按增值表加购）",
+            "超额承制价 $150/分钟（原价 $250/分钟，自购买起一年内有效）",
+            "HiLegal 平台一年展位 · 优先展示",
+            "HiLegal 自有渠道分发：触达中国涉外律师与出海企业 1 万人以上",
+            "交付周期 4–6 周（含访谈排期、拍摄与后期制作）；不提供免费样片试做",
+        ],
+    },
 }
+
+# 制作流程（来源：方案 § 6.0，适用于套餐 A / B 的 AI 视频制作）
+PRODUCTION_FLOW = [
+    ("选题策略", "认识律师、确定目标、运营定选题"),
+    ("脚本撰写", "法律素材库 / 爆款模板起草初稿，律师审核法律准确性、改口语"),
+    ("分镜拆解", "脚本 → 分镜全自动"),
+    ("画面生成", "AI 出镜头，人工选镜头、补特写"),
+    ("配音配乐", "ElevenLabs 多语言配音 + AI 配乐，人耳抽检"),
+    ("剪辑合成", "人工精修节奏、字幕、品牌露出"),
+    ("发布支持", "视频交付律师，支持自行发布至 HiLegal 展位"),
+]
+
+# 增值费用表（来源：方案 § 5.0）
+VALUE_ADDED_TABLE = [
+    ("每加一门语言（字幕 / 配音版本）", "基础费用 +20%"),
+    ("免费修改轮次之外，每增加 1 轮修改", "该条制作费用 +20%"),
+    ("每增加 1 人真人形象", "该条制作费用 +15%"),
+]
 
 
 # ==========================================
@@ -174,6 +214,11 @@ VIDEO_CSS_TEMPLATE = """
         color: #5E5E5E;
         font-size: 0.98rem;
     }
+    .main-scope {
+        margin-top: 0.6rem;
+        font-size: 0.85rem;
+        color: #7F7F7F;
+    }
 
     /* Strategy Card UI Optimization */
     .strategy-card {
@@ -200,8 +245,24 @@ VIDEO_CSS_TEMPLATE = """
         color: #333333;
         margin-bottom: 0.3rem;
     }
+    .pain-sub {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #181818;
+        margin: 0.7rem 0 0.3rem;
+    }
+    .solution-box {
+        margin-top: 0.8rem;
+        background-color: #E8F4F9;
+        border-left: 4px solid #0A66C2;
+        border-radius: 4px;
+        padding: 0.7rem 1rem;
+        font-size: 0.88rem;
+        color: #004182;
+        line-height: 1.5;
+    }
 
-    /* Price Comparison Banner (HiLegal 链接 § 1.1) */
+    /* Price Comparison Banner (方案 § 1.1) */
     .price-banner {
         background: linear-gradient(135deg, #0A66C2, #004182);
         color: #FFFFFF;
@@ -337,13 +398,49 @@ VIDEO_CSS_TEMPLATE = """
         padding: 1.1rem 1.2rem;
         box-shadow: 0 2px 6px rgba(10,102,194,0.12);
         box-sizing: border-box;
+        height: 100%;
     }
     .package-card.flag { border-color: #c9a24b; }
     .package-price { font-size: 1.5rem; font-weight: 800; color: #0A66C2; }
     .package-price span { font-size: 0.8rem; font-weight: 600; color: #5E5E5E; }
-    .package-tag { font-size: 0.82rem; color: #5E5E5E; margin: 0.2rem 0 0.6rem; }
+    .package-origin { font-size: 0.78rem; color: #9A9A9A; text-decoration: line-through; margin-left: 0.4rem; }
+    .package-mode {
+        display: inline-block;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: #004182;
+        background-color: #E8F4F9;
+        border-radius: 10px;
+        padding: 0.1rem 0.55rem;
+        margin-top: 0.4rem;
+    }
+    .package-tag { font-size: 0.82rem; color: #5E5E5E; margin: 0.5rem 0 0.6rem; }
     .package-points { margin: 0; padding-left: 1.1rem; }
     .package-points li { font-size: 0.84rem; color: #333333; margin-bottom: 0.35rem; }
+
+    /* Data Table (流程 / 增值费用表) */
+    .data-table {
+        background: #FFFFFF;
+        border: 1px solid #E0E0E0;
+        border-radius: 8px;
+        padding: 0.6rem 1rem 0.2rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        margin-bottom: 1.2rem;
+    }
+    .data-table table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .data-table th {
+        text-align: left;
+        color: #0A66C2;
+        border-bottom: 2px solid #E0E0E0;
+        padding: 0.5rem 0.4rem;
+    }
+    .data-table td {
+        border-bottom: 1px solid #F0F0F0;
+        padding: 0.45rem 0.4rem;
+        color: #333333;
+        vertical-align: top;
+    }
+    .flow-step { font-weight: 700; color: #181818; white-space: nowrap; }
 
     /* Form & Banner Highlight */
     .active-selection-banner {
@@ -380,6 +477,7 @@ VIDEO_CSS_TEMPLATE = """
         font-size: 0.85rem;
         color: #004182;
         margin-top: 0.8rem;
+        line-height: 1.6;
     }
 
     /* Footer */
@@ -392,6 +490,7 @@ VIDEO_CSS_TEMPLATE = """
         border-top: 1px solid #E0E0E0;
         padding-top: 1rem;
     }
+    .footer-disclaimer { margin-top: 0.5rem; font-size: 0.78rem; color: #9A9A9A; }
     .uv-badge {
         display: inline-block;
         background-color: #E0E0E0;
@@ -418,20 +517,63 @@ st.markdown(
 )
 
 # ==========================================
-# 3. Header Section
+# 3. Header Section（方案 § 导言）
 # ==========================================
 st.markdown(
     """
 <div class="main-header">
-    <div class="main-title">HiLegal · 海外律师 AI 视频制作</div>
-    <div class="main-subtitle">把 LinkedIn 主页变成高转化的法律获客视频 · Turn your LinkedIn profile into high-converting legal marketing videos</div>
+    <div class="main-title">HiLegal · 海外律师 AI 视频制作套餐方案</div>
+    <div class="main-subtitle">让专业被看到 · 把 LinkedIn 主页变成高转化的法律获客视频</div>
+    <div class="main-scope">适用对象：美国、加拿大、澳洲、英国、新加坡等地执业律师及中小律所（1–50 人）｜产品形态：一次性视频制作套餐包（非年付、非会员制），每单独立交付｜价格单位：USD</div>
 </div>
 """,
     unsafe_allow_html=True,
 )
 
 # ==========================================
-# 4. Legal Marketing Strategy Framework
+# 4. 痛点：为什么律师需要这个服务（方案 § 1.1 / § 1.2）
+# ==========================================
+st.markdown(
+    """
+<div class="strategy-card">
+    <div class="strategy-title">💡 为什么律师需要这个服务 / Why Lawyers Need This</div>
+    <div class="pain-sub">1.1 价格痛点：十分之一的价格</div>
+    <ul>
+        <li>传统律所营销制作 <b>USD 2,000–5,000 / 分钟</b>，交付 4–8 周；AI 视频承制 <b>USD 200 / 分钟</b>，人工承制 1–2 周、电影级品牌片 3–4 周。</li>
+    </ul>
+    <div class="pain-sub">1.2 出镜痛点：律师晕镜头</div>
+    <ul>
+        <li>一面对镜头就紧张——语速失控、表情僵硬、眼神躲闪，NG 二三十遍后放弃；</li>
+        <li>没时间拍：办案日程满，无法配合拍摄档期；</li>
+        <li>不知道说什么：专业内容强，但不知道怎么转成 60 秒能抓住观众的口播；</li>
+        <li>不想外包：外包剪辑 USD 150–300/条，还要自己出镜、自己写稿，价格和质量都不匹配。</li>
+    </ul>
+    <div class="solution-box">
+        <b>本方案的解法：</b>套餐 A / B（AI 生成视频）——律师只需提供照片和语音素材，脚本由法律内容模板库起草、律师确认，一切线上完成；套餐 C（真人出镜拍摄）——由专业团队访谈拍摄，深度内容一步到位。
+    </div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# 价格对比横幅（方案 § 1.1）
+st.markdown(
+    """
+<div class="price-banner">
+    <div class="price-banner-title">💰 十分之一的价格，做得出来的获客视频</div>
+    <div class="price-banner-row">
+        <div>传统律所营销 $2,000–5,000 / 分钟（4–8 周）</div>
+        <div class="vs">VS</div>
+        <div>AI 视频承制 $200 / 分钟（人工承制 1–2 周 / 电影级品牌片 3–4 周）</div>
+    </div>
+    <div class="price-banner-foot">核心结论：同样的预算，传统渠道只够做 1 条视频，AI 视频承制可以做 10 条。</div>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+# ==========================================
+# 5. Legal Marketing Strategy Framework
 # ==========================================
 st.markdown(
     """
@@ -442,22 +584,6 @@ st.markdown(
         <li><b>2. Professional Credibility:</b> Showcase case wins, legal expertise, and industry thought leadership.</li>
         <li><b>3. Business Development & Lead Generation:</b> Address client pain points, provide actionable legal solutions, and drive inbound leads.</li>
     </ul>
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-# 价格对比横幅（链接 § 1.1）
-st.markdown(
-    """
-<div class="price-banner">
-    <div class="price-banner-title">💰 十分之一的价格，做得出来的获客视频</div>
-    <div class="price-banner-row">
-        <div>传统律所营销 $2,000–5,000 / 分钟（4–8 周）</div>
-        <div class="vs">VS</div>
-        <div>HiLegal AI 承制 $200 / 分钟（1–2 周）</div>
-    </div>
-    <div class="price-banner-foot">同样的预算，传统渠道只够做 1 条，HiLegal 承制约可做 10 条。</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -537,7 +663,8 @@ def render_package_card(key, flag=False):
     st.markdown(
         f"""
     <div class="{cls}">
-        <div class="package-price">{p['price']}<span> 一次性</span></div>
+        <div class="package-price">{p['price']}<span> 一次性</span><span class="package-origin">{p.get('origin', '')}</span></div>
+        <div class="package-mode">{p.get('mode', '')}</div>
         <div class="package-tag">{p['tag']}</div>
         <ul class="package-points">{bullets}</ul>
     </div>
@@ -547,6 +674,44 @@ def render_package_card(key, flag=False):
     if st.button(f"✅ 选择此套餐 / Select {p['price']}", key=f"pkg_{key}"):
         st.session_state.selected_package = key
         st.session_state.trigger_scroll = True
+
+
+def render_flow_table():
+    """渲染制作流程表（方案 § 6.0）"""
+    rows = "".join(
+        f"<tr><td class='flow-step'>{i + 1}. {step}</td><td>{desc}</td></tr>"
+        for i, (step, desc) in enumerate(PRODUCTION_FLOW)
+    )
+    st.markdown(
+        f"""
+    <div class="data-table">
+        <table>
+            <thead><tr><th style="width: 22%;">环节</th><th>任务</th></tr></thead>
+            <tbody>{rows}</tbody>
+        </table>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_value_added_table():
+    """渲染增值费用表（方案 § 5.0）"""
+    rows = "".join(
+        f"<tr><td>{item}</td><td style='white-space: nowrap;'>{fee}</td></tr>"
+        for item, fee in VALUE_ADDED_TABLE
+    )
+    st.markdown(
+        f"""
+    <div class="data-table">
+        <table>
+            <thead><tr><th>增值项</th><th style="width: 30%;">费用规则</th></tr></thead>
+            <tbody>{rows}</tbody>
+        </table>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 # 辅助函数：触发点击后滚动并设置状态
@@ -655,18 +820,69 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 
 # ==========================================
-# 7.5 HiLegal 套餐选择（来源链接 § 2.0 / § 3.0）
+# 7.5 HiLegal 套餐选择（方案 § 2.0 / § 3.0）
 # ==========================================
 st.markdown(
-    '<div class="section-title">🎁 HiLegal 视频制作套餐（一次性套餐包，非会员制）</div>',
+    '<div class="section-title">🎁 HiLegal 视频制作套餐（一次性套餐包 · 非会员制 · 价格单位 USD）</div>',
     unsafe_allow_html=True,
 )
-pkg_cols = st.columns(2)
+pkg_cols = st.columns(3)
 pkg_keys = list(PACKAGES.keys())
 with pkg_cols[0]:
     render_package_card(pkg_keys[0], flag=False)
 with pkg_cols[1]:
     render_package_card(pkg_keys[1], flag=True)
+with pkg_cols[2]:
+    render_package_card(pkg_keys[2], flag=False)
+
+
+# ==========================================
+# 7.6 附赠权益：HiLegal 平台一年展位（方案 § 4.0）
+# ==========================================
+st.markdown(
+    '<div class="section-title">🏅 附赠权益：HiLegal 平台一年展位（三个套餐均赠送，套餐 B / C 为优先展示）</div>',
+    unsafe_allow_html=True,
+)
+st.markdown(
+    """
+<div class="strategy-card">
+    <ul>
+        <li><b>1. 视频自行发表：</b>制作的视频可直接发布在 HiLegal 平台律师主页，无需另行开通渠道，自主掌控发布节奏；</li>
+        <li><b>2. 跨境 AI 工具：</b>使用平台提供的跨境法律 AI 工具，辅助处理跨境业务咨询与客户沟通；</li>
+        <li><b>3. 中国出海企业关注：</b>HiLegal 面向有法律服务需求的中国出海企业，展位律师直接进入其选聘视野——视频内容即简历，展位即店面。</li>
+    </ul>
+</div>
+""",
+    unsafe_allow_html=True,
+)
+
+
+# ==========================================
+# 7.7 增值费用表（方案 § 5.0）
+# ==========================================
+st.markdown(
+    '<div class="section-title">➕ 增值费用表 / Value-Added Pricing</div>',
+    unsafe_allow_html=True,
+)
+render_value_added_table()
+
+
+# ==========================================
+# 7.8 制作流程（方案 § 6.0，适用于套餐 A / B 的 AI 视频制作）
+# ==========================================
+st.markdown(
+    '<div class="section-title">🎬 制作流程（AI 视频制作）/ Production Flow</div>',
+    unsafe_allow_html=True,
+)
+render_flow_table()
+st.markdown(
+    """
+<div class="notice-box">
+    ⏱ <b>交付时效：</b>人工承制 1–2 周（含 1 轮免费修改）；电影级品牌片 3–4 周（含 3 轮免费修改）；套餐 C 真人访谈 4–6 周（含 1 轮免费修改）。
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
 st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
 
@@ -716,16 +932,20 @@ with st.form(key="video_request_form"):
         ["— 暂不选择 / No package yet —"] + list(PACKAGES.keys()),
     )
 
-    # Terms（对齐链接 § 6.0 适用说明）
+    # Terms（对齐方案 § 7.0 适用说明）
     st.markdown(
         """
     <div class="notice-box">
-        💡 <b>Notes & Terms（条款说明）:</b><br>
-        1. 本服务为<b>一次性视频制作套餐包</b>（非会员制、非年付），按单交付。<br>
-        2. HiLegal 会员可<b>免费样片试做 1 条</b>，满意后付费；正式套餐为付费项目（套餐 A $590 / 套餐 B $1,990）。<br>
-        3. 交付周期：承制视频 <b>1–2 周</b>，电影级品牌片 <b>3–4 周</b>。<br>
-        4. 两个套餐均<b>不含数字分身</b>；语言权益为<b>第二语言字幕</b>（每条 1 种）。<br>
-        5. 提交即表示同意：生成素材权属归<b>律师本人及律所所有</b>，样片可用于本站展示。
+        💡 <b>适用说明 / Notes & Terms:</b><br>
+        1. 本方案为<b>一次性视频制作套餐包</b>，一次购买、按单交付，不涉及年付或会员制；<br>
+        2. 套餐 A 与 B 为 <b>AI 生成视频</b>，套餐 C 为<b>真人出镜拍摄</b>；<br>
+        3. 套餐 A / B 原价分别为 USD 990 / USD 2,990，折后价格分别为 USD 590 / USD 1,990；套餐 C 价格为 USD 1,990；视频单条原价为 USD 250（≤60 秒短视频）；<br>
+        4. 三个套餐均<b>不提供数字分身</b>，真人形象以实际拍摄素材为准；<br>
+        5. 语言权益为<b>第二语言字幕（每条 1 种）</b>，更多语言按增值表加购；<br>
+        6. <b>免费样片试做</b>仅面向 HiLegal 会员且仅限套餐 A / B（套餐 C 不提供），每律师限一次，满意后付费；<br>
+        7. 超额承制价 USD 150/分钟对套餐 A 与 B 客户一致（原价 USD 250/分钟），自购买起一年内有效；<br>
+        8. 交付周期：人工承制 1–2 周；电影级品牌片 3–4 周；套餐 C 真人访谈 4–6 周；<br>
+        9. AI 生成素材权属条款写入合同，交付后归<b>律师本人及律所所有</b>；提交即表示同意样片可用于本站展示。
     </div>
     """,
         unsafe_allow_html=True,
@@ -793,13 +1013,14 @@ if st.session_state.get("trigger_scroll", False):
     )
 
 # ==========================================
-# 9. Footer with Daily UV Counter
+# 9. Footer with Daily UV Counter（方案 § 导言 / 免责声明）
 # ==========================================
 st.markdown(
     f"""
 <div class="footer">
-    © 2026 HiLegal × 律镜 · 商务垂询 dengxiaotong@fadada.com ｜ 美国 · 加拿大 · 澳洲 · 英国 · 新加坡<br>
+    © 2026 HiLegal × 律镜 LegalReel · 商务垂询 dengxiaotong@fadada.com ｜ 美国 · 加拿大 · 澳洲 · 英国 · 新加坡<br>
     Daily Unique Visitors (UV): <span class="uv-badge">👤 {current_daily_uv}</span>
+    <div class="footer-disclaimer">免责声明：本方案为商业演示稿，最终价格与条款以正式服务协议为准。</div>
 </div>
 """,
     unsafe_allow_html=True,
