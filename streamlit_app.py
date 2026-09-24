@@ -170,12 +170,16 @@ VALUE_ADDED_TABLE = [
 # ==========================================
 # 视频素材
 # ==========================================
-LOCAL_VIDEO_1 = "01.mp4"
-LOCAL_VIDEO_2 = "02.mov"
-LOCAL_VIDEO_3 = "03.mp4"
-LOCAL_VIDEO_4 = "04.mp4"
-LOCAL_VIDEO_5 = "https://youtu.be/oxEZEpTFbdM?si=cCyakL16VWSENHuE"
-LOCAL_VIDEO_6 = "https://youtu.be/_ML6xoOS3ZE?si=1IShEo5sxY8YW5t7"
+
+LOCAL_VIDEO_3 = "https://youtu.be/3ev59ajEsaU?si=WjGqxdAdH0H0TOIF"
+LOCAL_VIDEO_4 = "https://youtu.be/Dkc9sDc-2Fw"
+
+LOCAL_VIDEO_1 = "https://youtube.com/shorts/AoMtIKUfS1c"
+LOCAL_VIDEO_2 = "https://youtube.com/shorts/Hgk1mvwI_Dw"
+
+
+LOCAL_VIDEO_5 = "https://youtu.be/xlbN0I4UKKQ?si=r_sYpatOkgISfdyB"
+LOCAL_VIDEO_6 = "https://youtu.be/uRY3Izl9Bl4?si=ggXFeLQ9AqEuPoll"
 
 VIDEO_MIME_MAP = {
     ".mp4": "video/mp4",
