@@ -406,7 +406,7 @@ else:
     st.info(L("💡 点击上方任一「选择风格」或「选择套餐」按钮，或直接填写表单！",
               "💡 Click any Select style / Select package button above, or fill out the form directly!"))
 
-pkg_options = [L("— 暂不选择 —", "— No package yet —")] + [f"{PACKAGES[k]['name']} {PACKAGES[k]['price']}" for k in PKG_KEYS]
+pkg_options = [L("— 样例(免费) —", "— Trial（0 Cost） —")] + [f"{PACKAGES[k]['name']} {PACKAGES[k]['price']}" for k in PKG_KEYS]
 
 with st.form(key="video_request_form"):
     linkedin_url = st.text_input("LinkedIn Profile URL", placeholder="https://www.linkedin.com/in/your-profile")
