@@ -373,6 +373,109 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
+# ==========================================
+# 10. 表单
+# ==========================================
+st.markdown('<div id="generate-form"></div>', unsafe_allow_html=True)
+section_header(L('立即开始', 'Get Started'), L('生成你的定制视频', 'Generate Your Personalized Video'))
+
+if st.session_state.selected_category or st.session_state.selected_package:
+    cat = st.session_state.selected_category or L("未指定风格", "No style")
+    pkg = st.session_state.selected_package or L("未选择套餐", "No package")
+    st.markdown(
+        f"""
+    <div class="active-selection-banner">
+        <h4>{L('已选风格', 'Selected style')}: <b>{cat}</b> ｜ {L('套餐', 'Package')}: <b>{pkg}</b></h4>
+        <p style="margin: 0; color: #4A5568; font-size: .9rem;">
+            {L('请在下方填写你的 LinkedIn 主页与邮箱，我们会按此营销目标为你定制视频！',
+               'Enter your LinkedIn profile and email below — your video will be tailored to this objective!')}
+        </p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+else:
+    st.info(L("💡 点击上方任一「选择风格」或「选择套餐」按钮，或直接填写表单！",
+              "💡 Click any Select style / Select package button above, or fill out the form directly!"))
+
+pkg_options = [L("— 暂不选择 —", "— No package yet —")] + [f"{PACKAGES[k]['name']} {PACKAGES[k]['price']}" for k in PKG_KEYS]
+
+with st.form(key="video_request_form"):
+    linkedin_url = st.text_input("LinkedIn Profile URL", placeholder="https://www.linkedin.com/in/your-profile")
+    email = st.text_input(L("接收视频的邮箱", "Email address to receive video"), placeholder="yourname@example.com")
+    package_sel = st.selectbox(L("选择套餐", "Select package"), pkg_options)
+    st.markdown(
+        f"""
+    <div class="notice-box">
+        <b>{L('适用说明 / Notes & Terms:', 'Notes & Terms:')}</b><br>
+        {L('1. 本方案为一次性视频制作套餐包，一次购买、按单交付，不涉及年付或会员制；<br>',
+           '1. One-time production packages, delivered per order — no subscription;<br>')}
+        {L('2. 套餐 A 与 B 为 AI 生成视频，套餐 C 为真人出镜拍摄；<br>',
+           '2. Packages A/B are AI-generated; Package C is an on-camera shoot;<br>')}
+        {L('3. 套餐 A / B 原价 USD 990 / 2,990，折后 USD 590 / 1,990；套餐 C 为 USD 1,990；单条原价 USD 250（≤60 秒）；<br>',
+           '3. A/B were USD 990 / 2,990, now USD 590 / 1,990; C is USD 1,990; a single clip is USD 250 (≤60s);<br>')}
+        {L('4. 三个套餐均不提供数字分身，真人形象以实际拍摄素材为准；<br>',
+           '4. No digital clones; likenesses reflect actual footage;<br>')}
+        {L('5. 语言权益为第二语言字幕（每条 1 种），更多语言按增值表加购；<br>',
+           '5. Each video includes 1 second-language subtitle; extra languages per the add-on table;<br>')}
+        {L('6. 免费样片试做仅面向 HiLegal 会员且仅限套餐 A / B，每律师限一次；<br>',
+           '6. Free sample trial is HiLegal-members only and limited to A/B, once per lawyer;<br>')}
+        {L('7. 超额承制价 USD 150/分钟对 A、B 一致（原价 USD 250/分钟），一年内有效；<br>',
+           '7. Extra footage USD 150/min applies equally to A/B (was USD 250), valid one year;<br>')}
+        {L('8. 交付周期：人工承制 1–2 周；品牌片 3–4 周；套餐 C 访谈 4–6 周；<br>',
+           '8. Delivery: 1-2 weeks hand-produced; 3-4 weeks brand film; 4-6 weeks Package C;<br>')}
+        {L('9. AI 生成素材权属写入合同，交付后归律师本人及律所所有；提交即同意样片用于本站展示。',
+           '9. AI asset ownership is in the contract and vests in the lawyer/firm; submitting consents to on-site sample display.')}
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+    submit_button = st.form_submit_button(label=L("提交需求 / Submit Request", "Submit Request"))
+
+if submit_button:
+    if not linkedin_url or not email:
+        st.error(L("请完整填写 LinkedIn 链接与邮箱！", "Please complete both the LinkedIn URL and Email fields!"))
+    elif "linkedin.com/in/" not in linkedin_url.lower():
+        st.warning(L("请输入有效的 LinkedIn 主页链接（如 https://www.linkedin.com/in/xxx）",
+                     "Please enter a valid LinkedIn profile link (e.g. https://www.linkedin.com/in/xxx)"))
+    elif "@" not in email:
+        st.warning(L("请输入有效的邮箱地址！", "Please enter a valid email address!"))
+    else:
+        chosen_cat = st.session_state.selected_category or "General Showcase"
+        chosen_pkg = package_sel if package_sel != pkg_options[0] else (st.session_state.selected_package or "General Showcase")
+        mail_subject = "HiLegal 新视频需求提交 / New Lawyer Video Request"
+        mail_body = (
+            "A new user has submitted a video request!\n\n"
+            f"Selected Style: {chosen_cat}\n"
+            f"Selected Package: {chosen_pkg}\n\n"
+            f"LinkedIn Profile: {linkedin_url}\n"
+            f"User Email: {email}\n"
+        )
+        with st.spinner(L("正在提交你的需求...", "Submitting your request...")):
+            success, err_msg = send_email_notification(mail_subject, mail_body)
+        if success:
+            st.success(L("✅ 提交成功！", "✅ Submitted Successfully!"))
+            st.info(
+                f"{L('我们已收到你的需求', 'We received your request')} ({chosen_pkg}). "
+                f"{L('定制视频将在 1–2 周内发送至', 'Your custom video will be delivered to')} {email}."
+            )
+        else:
+            st.error(f"{L('⚠️ 通知发送失败：', '⚠️ Failed to send notification: ')}{err_msg}")
+
+if st.session_state.get("trigger_scroll", False):
+    st.session_state.trigger_scroll = False
+    components.html(
+        """
+        <script>
+            window.parent.document.getElementById('generate-form').scrollIntoView({behavior: 'smooth'});
+        </script>
+        """,
+        height=0,
+    )
+
+
 # ==========================================
 # 4. 价格对比条
 # ==========================================
@@ -614,107 +717,6 @@ st.markdown(
 )
 
 st.markdown("<br><hr style='margin: 1.5rem 0;'><br>", unsafe_allow_html=True)
-
-# ==========================================
-# 10. 表单
-# ==========================================
-st.markdown('<div id="generate-form"></div>', unsafe_allow_html=True)
-section_header(L('立即开始', 'Get Started'), L('生成你的定制视频', 'Generate Your Personalized Video'))
-
-if st.session_state.selected_category or st.session_state.selected_package:
-    cat = st.session_state.selected_category or L("未指定风格", "No style")
-    pkg = st.session_state.selected_package or L("未选择套餐", "No package")
-    st.markdown(
-        f"""
-    <div class="active-selection-banner">
-        <h4>{L('已选风格', 'Selected style')}: <b>{cat}</b> ｜ {L('套餐', 'Package')}: <b>{pkg}</b></h4>
-        <p style="margin: 0; color: #4A5568; font-size: .9rem;">
-            {L('请在下方填写你的 LinkedIn 主页与邮箱，我们会按此营销目标为你定制视频！',
-               'Enter your LinkedIn profile and email below — your video will be tailored to this objective!')}
-        </p>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-else:
-    st.info(L("💡 点击上方任一「选择风格」或「选择套餐」按钮，或直接填写表单！",
-              "💡 Click any Select style / Select package button above, or fill out the form directly!"))
-
-pkg_options = [L("— 暂不选择 —", "— No package yet —")] + [f"{PACKAGES[k]['name']} {PACKAGES[k]['price']}" for k in PKG_KEYS]
-
-with st.form(key="video_request_form"):
-    linkedin_url = st.text_input("LinkedIn Profile URL", placeholder="https://www.linkedin.com/in/your-profile")
-    email = st.text_input(L("接收视频的邮箱", "Email address to receive video"), placeholder="yourname@example.com")
-    package_sel = st.selectbox(L("选择套餐", "Select package"), pkg_options)
-    st.markdown(
-        f"""
-    <div class="notice-box">
-        <b>{L('适用说明 / Notes & Terms:', 'Notes & Terms:')}</b><br>
-        {L('1. 本方案为一次性视频制作套餐包，一次购买、按单交付，不涉及年付或会员制；<br>',
-           '1. One-time production packages, delivered per order — no subscription;<br>')}
-        {L('2. 套餐 A 与 B 为 AI 生成视频，套餐 C 为真人出镜拍摄；<br>',
-           '2. Packages A/B are AI-generated; Package C is an on-camera shoot;<br>')}
-        {L('3. 套餐 A / B 原价 USD 990 / 2,990，折后 USD 590 / 1,990；套餐 C 为 USD 1,990；单条原价 USD 250（≤60 秒）；<br>',
-           '3. A/B were USD 990 / 2,990, now USD 590 / 1,990; C is USD 1,990; a single clip is USD 250 (≤60s);<br>')}
-        {L('4. 三个套餐均不提供数字分身，真人形象以实际拍摄素材为准；<br>',
-           '4. No digital clones; likenesses reflect actual footage;<br>')}
-        {L('5. 语言权益为第二语言字幕（每条 1 种），更多语言按增值表加购；<br>',
-           '5. Each video includes 1 second-language subtitle; extra languages per the add-on table;<br>')}
-        {L('6. 免费样片试做仅面向 HiLegal 会员且仅限套餐 A / B，每律师限一次；<br>',
-           '6. Free sample trial is HiLegal-members only and limited to A/B, once per lawyer;<br>')}
-        {L('7. 超额承制价 USD 150/分钟对 A、B 一致（原价 USD 250/分钟），一年内有效；<br>',
-           '7. Extra footage USD 150/min applies equally to A/B (was USD 250), valid one year;<br>')}
-        {L('8. 交付周期：人工承制 1–2 周；品牌片 3–4 周；套餐 C 访谈 4–6 周；<br>',
-           '8. Delivery: 1-2 weeks hand-produced; 3-4 weeks brand film; 4-6 weeks Package C;<br>')}
-        {L('9. AI 生成素材权属写入合同，交付后归律师本人及律所所有；提交即同意样片用于本站展示。',
-           '9. AI asset ownership is in the contract and vests in the lawyer/firm; submitting consents to on-site sample display.')}
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-    st.markdown("<br>", unsafe_allow_html=True)
-    submit_button = st.form_submit_button(label=L("提交需求 / Submit Request", "Submit Request"))
-
-if submit_button:
-    if not linkedin_url or not email:
-        st.error(L("请完整填写 LinkedIn 链接与邮箱！", "Please complete both the LinkedIn URL and Email fields!"))
-    elif "linkedin.com/in/" not in linkedin_url.lower():
-        st.warning(L("请输入有效的 LinkedIn 主页链接（如 https://www.linkedin.com/in/xxx）",
-                     "Please enter a valid LinkedIn profile link (e.g. https://www.linkedin.com/in/xxx)"))
-    elif "@" not in email:
-        st.warning(L("请输入有效的邮箱地址！", "Please enter a valid email address!"))
-    else:
-        chosen_cat = st.session_state.selected_category or "General Showcase"
-        chosen_pkg = package_sel if package_sel != pkg_options[0] else (st.session_state.selected_package or "General Showcase")
-        mail_subject = "HiLegal 新视频需求提交 / New Lawyer Video Request"
-        mail_body = (
-            "A new user has submitted a video request!\n\n"
-            f"Selected Style: {chosen_cat}\n"
-            f"Selected Package: {chosen_pkg}\n\n"
-            f"LinkedIn Profile: {linkedin_url}\n"
-            f"User Email: {email}\n"
-        )
-        with st.spinner(L("正在提交你的需求...", "Submitting your request...")):
-            success, err_msg = send_email_notification(mail_subject, mail_body)
-        if success:
-            st.success(L("✅ 提交成功！", "✅ Submitted Successfully!"))
-            st.info(
-                f"{L('我们已收到你的需求', 'We received your request')} ({chosen_pkg}). "
-                f"{L('定制视频将在 1–2 周内发送至', 'Your custom video will be delivered to')} {email}."
-            )
-        else:
-            st.error(f"{L('⚠️ 通知发送失败：', '⚠️ Failed to send notification: ')}{err_msg}")
-
-if st.session_state.get("trigger_scroll", False):
-    st.session_state.trigger_scroll = False
-    components.html(
-        """
-        <script>
-            window.parent.document.getElementById('generate-form').scrollIntoView({behavior: 'smooth'});
-        </script>
-        """,
-        height=0,
-    )
 
 # ==========================================
 # 11. Footer
