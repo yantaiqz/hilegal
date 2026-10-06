@@ -172,7 +172,7 @@ VALUE_ADDED_TABLE = [
 # ==========================================
 
 LOCAL_VIDEO_3 = "https://youtu.be/3ev59ajEsaU?si=WjGqxdAdH0H0TOIF"
-LOCAL_VIDEO_4 = "https://youtu.be/Dkc9sDc-2Fw"
+LOCAL_VIDEO_4 = "https://www.youtube.com/watch?v=Ao-0e1dxmJE"
 
 LOCAL_VIDEO_1 = "https://www.youtube.com/watch?v=AoMtIKUfS1c"
 LOCAL_VIDEO_2 = "https://www.youtube.com/watch?v=Hgk1mvwI_Dw"
