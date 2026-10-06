@@ -412,32 +412,7 @@ with st.form(key="video_request_form"):
     linkedin_url = st.text_input("LinkedIn Profile URL", placeholder="https://www.linkedin.com/in/your-profile")
     email = st.text_input(L("接收视频的邮箱", "Email address to receive video"), placeholder="yourname@example.com")
     package_sel = st.selectbox(L("选择套餐", "Select package"), pkg_options)
-    st.markdown(
-        f"""
-    <div class="notice-box">
-        <b>{L('适用说明 / Notes & Terms:', 'Notes & Terms:')}</b><br>
-        {L('1. 本方案为一次性视频制作套餐包，一次购买、按单交付，不涉及年付或会员制；<br>',
-           '1. One-time production packages, delivered per order — no subscription;<br>')}
-        {L('2. 套餐 A 与 B 为 AI 生成视频，套餐 C 为真人出镜拍摄；<br>',
-           '2. Packages A/B are AI-generated; Package C is an on-camera shoot;<br>')}
-        {L('3. 套餐 A / B 原价 USD 990 / 2,990，折后 USD 590 / 1,990；套餐 C 为 USD 1,990；单条原价 USD 250（≤60 秒）；<br>',
-           '3. A/B were USD 990 / 2,990, now USD 590 / 1,990; C is USD 1,990; a single clip is USD 250 (≤60s);<br>')}
-        {L('4. 三个套餐均不提供数字分身，真人形象以实际拍摄素材为准；<br>',
-           '4. No digital clones; likenesses reflect actual footage;<br>')}
-        {L('5. 语言权益为第二语言字幕（每条 1 种），更多语言按增值表加购；<br>',
-           '5. Each video includes 1 second-language subtitle; extra languages per the add-on table;<br>')}
-        {L('6. 免费样片试做仅面向 HiLegal 会员且仅限套餐 A / B，每律师限一次；<br>',
-           '6. Free sample trial is HiLegal-members only and limited to A/B, once per lawyer;<br>')}
-        {L('7. 超额承制价 USD 150/分钟对 A、B 一致（原价 USD 250/分钟），一年内有效；<br>',
-           '7. Extra footage USD 150/min applies equally to A/B (was USD 250), valid one year;<br>')}
-        {L('8. 交付周期：人工承制 1–2 周；品牌片 3–4 周；套餐 C 访谈 4–6 周；<br>',
-           '8. Delivery: 1-2 weeks hand-produced; 3-4 weeks brand film; 4-6 weeks Package C;<br>')}
-        {L('9. AI 生成素材权属写入合同，交付后归律师本人及律所所有；提交即同意样片用于本站展示。',
-           '9. AI asset ownership is in the contract and vests in the lawyer/firm; submitting consents to on-site sample display.')}
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
+
     st.markdown("<br>", unsafe_allow_html=True)
     submit_button = st.form_submit_button(label=L("提交需求 / Submit Request", "Submit Request"))
 
