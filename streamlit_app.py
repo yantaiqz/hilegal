@@ -374,6 +374,13 @@ st.markdown(
 )
 
 
+
+def section_header(eyebrow, title):
+    st.markdown(
+        f'<div class="eyebrow">{eyebrow}</div><div class="section-title">{title}</div>',
+        unsafe_allow_html=True,
+    )
+
 # ==========================================
 # 10. 表单
 # ==========================================
@@ -533,13 +540,6 @@ def render_reserve_card(cat_name, title, card_title, card_desc):
     if st.button(L("✨ 选择此风格", "✨ Select style"), key=f"btn_{cat_name}"):
         st.session_state.selected_category = cat_name
         st.session_state.trigger_scroll = True
-
-
-def section_header(eyebrow, title):
-    st.markdown(
-        f'<div class="eyebrow">{eyebrow}</div><div class="section-title">{title}</div>',
-        unsafe_allow_html=True,
-    )
 
 
 # --- 第一行：电影品质视频 ---
