@@ -385,26 +385,7 @@ def section_header(eyebrow, title):
 # 10. 表单
 # ==========================================
 st.markdown('<div id="generate-form"></div>', unsafe_allow_html=True)
-section_header(L('立即开始', 'Get Started'), L('生成你的定制视频', 'Generate Your Personalized Video'))
-
-if st.session_state.selected_category or st.session_state.selected_package:
-    cat = st.session_state.selected_category or L("未指定风格", "No style")
-    pkg = st.session_state.selected_package or L("未选择套餐", "No package")
-    st.markdown(
-        f"""
-    <div class="active-selection-banner">
-        <h4>{L('已选风格', 'Selected style')}: <b>{cat}</b> ｜ {L('套餐', 'Package')}: <b>{pkg}</b></h4>
-        <p style="margin: 0; color: #4A5568; font-size: .9rem;">
-            {L('请在下方填写你的 LinkedIn 主页与邮箱，我们会按此营销目标为你定制视频！',
-               'Enter your LinkedIn profile and email below — your video will be tailored to this objective!')}
-        </p>
-    </div>
-    """,
-        unsafe_allow_html=True,
-    )
-else:
-    st.info(L("💡 点击上方任一「选择风格」或「选择套餐」按钮，或直接填写表单！",
-              "💡 Click any Select style / Select package button above, or fill out the form directly!"))
+section_header(L('立即开始', 'Get Started'), L('生成你的定制视频：填写你的 LinkedIn 主页与邮箱定制视频！', 'Generate Your Personalized Video：Enter your LinkedIn profile and email below!'))
 
 pkg_options = [L("— 样例(免费) —", "— Trial（0 Cost） —")] + [f"{PACKAGES[k]['name']} {PACKAGES[k]['price']}" for k in PKG_KEYS]
 
